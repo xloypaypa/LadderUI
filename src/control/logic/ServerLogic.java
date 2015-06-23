@@ -2,6 +2,7 @@ package control.logic;
 
 import control.event.*;
 import control.event.action.SetProxyTypeAction;
+import control.event.action.SetTransferServerAction;
 import control.event.action.StartServerAction;
 import control.event.steep.StringToIntegerSteep;
 
@@ -25,6 +26,7 @@ public class ServerLogic {
         event.addSteep(new StringToIntegerSteep("client port"));
         event.addSteep(new StringToIntegerSteep("server port"));
         event.addSteep(new SetProxyTypeAction());
+        event.addSteep(new SetTransferServerAction());
         event.addSteep(new StartServerAction());
         event.putValue("client port", port);
         event.putValue("proxy type", "transfer");
