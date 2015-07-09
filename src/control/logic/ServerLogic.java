@@ -3,6 +3,7 @@ package control.logic;
 import control.event.*;
 import control.event.action.SetProxyTypeAction;
 import control.event.action.SetTransferServerAction;
+import control.event.action.StartFileServerAction;
 import control.event.action.StartServerAction;
 import control.event.steep.StringToIntegerSteep;
 
@@ -18,6 +19,14 @@ public class ServerLogic {
         event.addSteep(new StartServerAction());
         event.putValue("client port", port);
         event.putValue("proxy type", "http");
+        event.runEvent();
+    }
+
+    public static void startServer(String port) {
+        NormalEvent event = new NormalEvent();
+        event.addSteep(new StringToIntegerSteep("client port"));
+        event.addSteep(new StartFileServerAction());
+        event.putValue("client port", port);
         event.runEvent();
     }
 

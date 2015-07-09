@@ -25,6 +25,19 @@ public class Operator {
         thread.start();
     }
 
+    public static void startServer(String port) {
+        isOpen = true;
+        Operator.port = port;
+        thread = new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                ServerLogic.startServer(port);
+            }
+        };
+        thread.start();
+    }
+
     public static void startTransfer(String port, String serverIP, String serverPort) {
         isOpen = true;
         Operator.port = port;

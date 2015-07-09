@@ -39,6 +39,8 @@ public class StatusPage extends TabbedPageKidPage {
             public void actionPerformed(ActionEvent e) {
                 if (StatusPage.this.horizontalRadioButtons.getChoosen().getName().equals("http")) {
                     Operator.startHttp(clientPort.getWords());
+                } else if (StatusPage.this.horizontalRadioButtons.getChoosen().getName().equals("server")) {
+                    Operator.startServer(clientPort.getWords());
                 } else {
                     Operator.startTransfer(clientPort.getWords(), serverIP.getWords(), serverPort.getWords());
                 }
@@ -67,7 +69,14 @@ public class StatusPage extends TabbedPageKidPage {
 
         this.horizontalRadioButtons = new HorizontalRadioButtons();
         this.horizontalRadioButtons.setBounds(10, 80, 250, 20);
-        this.horizontalRadioButtons.addButton("http").addActionListener(new AbstractAction() {
+        this.horizontalRadioButtons.addButton("http", 75).addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                StatusPage.this.serverIP.setVisible(false);
+                StatusPage.this.serverPort.setVisible(false);
+            }
+        });
+        this.horizontalRadioButtons.addButton("server", 75).addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 StatusPage.this.serverIP.setVisible(false);

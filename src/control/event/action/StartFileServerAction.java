@@ -4,29 +4,21 @@ import control.event.AbstractAction;
 import control.event.tool.ValueChecker;
 import control.listener.ListenerManager;
 import javafx.util.Pair;
-import proxy.ProxyServer;
-import proxy.proxy.HttpProxy;
-import proxy.proxy.TransferProxy;
+import server.server.Server;
 
-/**
- * Created by xlo on 15-6-23.
- * it's the action of set proxy type.
- */
-public class SetProxyTypeAction extends AbstractAction {
+public class StartFileServerAction extends AbstractAction {
+
     @Override
     protected void run() {
-        if (this.eventCallBack.getValue("proxy type").equals("http")) {
-            ProxyServer.proxyBuilder = HttpProxy::new;
-        } else {
-            ProxyServer.proxyBuilder = TransferProxy::new;
-        }
+        Server.getInstance((Integer) this.eventCallBack.getValue("client port"));
+        Server.accept();
     }
 
     @Override
     protected boolean checkNeedData() {
         ValueChecker valueChecker = new ValueChecker();
         valueChecker.setEventCallBack(this.eventCallBack);
-        valueChecker.addItem(new Pair<>("proxy type", String.class));
+        valueChecker.addItem(new Pair<>("client port", Integer.class));
         if (valueChecker.checkAllItem()) {
             return true;
         } else {
