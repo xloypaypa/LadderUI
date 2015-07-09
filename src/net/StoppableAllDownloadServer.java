@@ -16,11 +16,9 @@ public class StoppableAllDownloadServer extends AllDownloadSolver {
         this.requestSolver.getReplyHeadWriter().addMessage("Content-Disposition", "attachment;filename=" + this.file.getName());
 
         if (this.requestSolver.getMessage("Range") == null) {
-            System.out.println("new");
             this.requestSolver.setReply(200);
             this.requestSolver.getReplyHeadWriter().addMessage("Content-Length", "" + this.file.length());
         } else {
-            System.out.println("range");
             this.requestSolver.setReply(206);
             String range = this.requestSolver.getMessage("Range");
             if (!solveRangeMessage(range)) return false;
@@ -29,7 +27,6 @@ public class StoppableAllDownloadServer extends AllDownloadSolver {
     }
 
     protected boolean solveRangeMessage(String range) {
-        System.out.println(range);
         int equalPos = range.indexOf('=');
         int halfPos = range.indexOf('-');
         long start, end;
@@ -49,7 +46,6 @@ public class StoppableAllDownloadServer extends AllDownloadSolver {
             e.printStackTrace();
             return false;
         }
-        System.out.println("start download: " + ans);
         buildReplyRangeMessage(start, end, ans);
         return true;
     }
