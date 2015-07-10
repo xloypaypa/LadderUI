@@ -93,7 +93,7 @@ public class ShowFolderStoppableAllDownloadServer extends StoppableAllDownloadSe
         page += this.file.getPath() + "\r\n";
         page += "</h2>\r\n";
 
-        page += "<a href=\"" + this.file.getParent() + "\">" + "parent folder</a><br><br>\r\n";
+        page += "<a href=\"" + getPath(this.file.getParent()) + "\">" + "parent folder</a><br><br>\r\n";
 
         String extra;
         File[] kids = this.file.listFiles();
@@ -106,10 +106,17 @@ public class ShowFolderStoppableAllDownloadServer extends StoppableAllDownloadSe
                 } else {
                     extra = " (unknown)";
                 }
-                page += "<a href=\"" + now.getPath() + "\">" + now.getPath() + extra + "</a><br>\r\n";
+                page += "<a href=\"" + getPath(now.getPath()) + "\">" + now.getPath() + extra + "</a><br>\r\n";
             }
         }
         page += "</body>\r\n";
         page += "</html>\r\n";
+    }
+
+    private String getPath(String message) {
+        String path = message;
+        if (message == null) return null;
+        if (path.charAt(0) != '/') path = '/' + path;
+        return path;
     }
 }
