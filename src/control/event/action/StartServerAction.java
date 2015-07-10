@@ -35,4 +35,9 @@ public class StartServerAction extends AbstractAction {
     protected void putData() {
 
     }
+
+    @Override
+    protected String getNextSteep() {
+        return null;
+    }
 }

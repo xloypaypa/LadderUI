@@ -34,4 +34,9 @@ public class StartFileServerAction extends AbstractAction {
     protected void putData() {
 
     }
+
+    @Override
+    protected String getNextSteep() {
+        return null;
+    }
 }

@@ -36,4 +36,9 @@ public class SetTransferServerAction extends AbstractAction {
     protected void putData() {
 
     }
+
+    @Override
+    protected String getNextSteep() {
+        return SetProxyTypeAction.class.getSimpleName();
+    }
 }

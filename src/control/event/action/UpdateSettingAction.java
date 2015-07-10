@@ -42,4 +42,9 @@ public class UpdateSettingAction extends AbstractAction {
     protected void putData() {
 
     }
+
+    @Override
+    protected String getNextSteep() {
+        return null;
+    }
 }

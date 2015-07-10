@@ -40,4 +40,9 @@ public class SetProxyTypeAction extends AbstractAction {
     protected void putData() {
 
     }
+
+    @Override
+    protected String getNextSteep() {
+        return StartServerAction.class.getSimpleName();
+    }
 }

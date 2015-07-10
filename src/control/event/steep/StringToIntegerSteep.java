@@ -12,10 +12,11 @@ import log.LogManager;
  */
 public class StringToIntegerSteep extends AbstractSteep {
     private int ans;
-    private String name;
+    private String name, nextSteep;
 
-    public StringToIntegerSteep(String name) {
+    public StringToIntegerSteep(String name, String nextSteep) {
         this.name = name;
+        this.nextSteep = nextSteep;
     }
 
     @Override
@@ -48,5 +49,10 @@ public class StringToIntegerSteep extends AbstractSteep {
     @Override
     protected void putData() {
         this.eventCallBack.putValue(name, ans);
+    }
+
+    @Override
+    protected String getNextSteep() {
+        return this.nextSteep;
     }
 }
