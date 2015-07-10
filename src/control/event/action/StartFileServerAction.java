@@ -4,14 +4,14 @@ import control.event.AbstractAction;
 import control.event.tool.ValueChecker;
 import control.listener.ListenerManager;
 import javafx.util.Pair;
-import net.StoppableAllDownloadServer;
+import net.ShowFolderStoppableAllDownloadServer;
 import server.server.Server;
 
 public class StartFileServerAction extends AbstractAction {
 
     @Override
     protected void run() {
-        Server.solverBuilder = StoppableAllDownloadServer::new;
+        Server.solverBuilder = ShowFolderStoppableAllDownloadServer::new;
         Server.getInstance((Integer) this.eventCallBack.getValue("client port"));
         Server.accept();
     }
