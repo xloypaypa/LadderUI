@@ -2,7 +2,7 @@ package main;
 
 import control.listener.ListenerManager;
 import log.LogManager;
-import model.ErrorLog;
+import model.log.ErrorLog;
 import model.listener.NormalListener;
 import values.SystemStrings;
 import view.MainWindow;

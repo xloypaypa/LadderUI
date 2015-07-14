@@ -18,6 +18,8 @@ public class MethodSolver extends AbstractSolver {
     public boolean sendPreMessage() {
         if (this.requestSolver.getCommand().equals("POST")) {
             this.aimSolver = new PostSolver();
+        } else if (this.requestSolver.getMessage("Get-folder-list") != null && this.requestSolver.getMessage("Get-folder-list").equals("true")) {
+            this.aimSolver = new ListFolderSolver();
         } else {
             this.aimSolver = new ShowFolderStoppableAllDownloadServer();
         }

@@ -84,30 +84,11 @@ public class ShowFolderStoppableAllDownloadServer extends StoppableAllDownloadSe
         }
     }
 
-    private void buildPage() {
+    protected void buildPage() {
         page = PageReader.readPage("/page.html");
-        page += "<h2>\r\n";
-        page += this.file.getPath() + "\r\n";
-        page += "</h2>\r\n";
-        page += "<a href=\"" + getPath(this.file.getParent()) + "\">" + "parent folder</a><br><br>\r\n";
-        String extra;
-        File[] kids = this.file.listFiles();
-        if (kids != null) {
-            for (File now : kids) {
-                if (now.isFile()) {
-                    extra = " (file)";
-                } else if (now.isDirectory()) {
-                    extra = " (folder)";
-                } else {
-                    extra = " (unknown)";
-                }
-                page += "<a href=\"" + getPath(now.getPath()) + "\">" + now.getPath() + extra + "</a><br>\r\n";
-            }
-        }
-        page += PageReader.readPage("/page2.html");
     }
 
-    private String getPath(String message) {
+    protected String getPath(String message) {
         String path = message;
         if (message == null) return null;
         if (path.charAt(0) != '/') path = '/' + path;

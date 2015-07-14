@@ -1,4 +1,4 @@
-package model;
+package model.log;
 
 import control.listener.ListenerManager;
 import log.NormalLog;
