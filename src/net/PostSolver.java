@@ -10,6 +10,8 @@ import tool.io.LengthLimitIO;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 /**
  * Created by xlo on 15-7-14.
@@ -21,7 +23,11 @@ public class PostSolver extends NormalSolver {
 
     @Override
     protected boolean checkRequestExist() {
-        this.file = new File(this.requestSolver.getUrl().getFile());
+        try {
+            this.file = new File(URLDecoder.decode(this.requestSolver.getUrl().getFile(), "utf-8"));
+        } catch (UnsupportedEncodingException e) {
+            return false;
+        }
         return !this.file.exists() && this.file.getParentFile().exists() && this.file.getParentFile().isDirectory();
     }
 
