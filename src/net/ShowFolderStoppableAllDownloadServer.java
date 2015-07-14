@@ -1,15 +1,16 @@
 package net;
 
+import model.pageReader.PageReader;
 import net.io.StringIOBuilder;
 import server.io.NormalFileIO;
-import tool.CustomEdgeConnector;
-import tool.IOAble;
+import tool.Connector;
+import tool.NormalConnector;
+import tool.io.IO;
+import tool.io.NormalIO;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by xlo on 15-7-10.
@@ -65,19 +66,18 @@ public class ShowFolderStoppableAllDownloadServer extends StoppableAllDownloadSe
     }
 
     @Override
-    protected void connect() {
+    public void connect() {
         if (this.file.isDirectory()) {
             StringIOBuilder stringIOBuilder = new StringIOBuilder();
             stringIOBuilder.setMessage(this.page);
             stringIOBuilder.buildIO();
 
-            CustomEdgeConnector connector = new CustomEdgeConnector();
-            connector.addMember(stringIOBuilder);
-            connector.addMember(this.requestSolver);
-            Set<IOAble> to = new HashSet<>();
-            to.add(this.requestSolver);
-            connector.setEdge(stringIOBuilder, to);
-            connector.setSync(stringIOBuilder, to);
+            IO io = new NormalIO();
+            io.setInputStream(stringIOBuilder.getInputStream());
+            io.addOutputStream(this.requestSolver.getOutputStream());
+
+            Connector connector = new NormalConnector();
+            connector.addMember(io);
             connector.connect();
         } else {
             super.connect();
@@ -85,16 +85,11 @@ public class ShowFolderStoppableAllDownloadServer extends StoppableAllDownloadSe
     }
 
     private void buildPage() {
-        page = "";
-        page += "<html>\r\n";
-        page += "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + System.getProperty("file.encoding") + "\" />\r\n";
-        page += "<body>\r\n";
+        page = PageReader.readPage("/page.html");
         page += "<h2>\r\n";
         page += this.file.getPath() + "\r\n";
         page += "</h2>\r\n";
-
         page += "<a href=\"" + getPath(this.file.getParent()) + "\">" + "parent folder</a><br><br>\r\n";
-
         String extra;
         File[] kids = this.file.listFiles();
         if (kids != null) {
@@ -109,8 +104,7 @@ public class ShowFolderStoppableAllDownloadServer extends StoppableAllDownloadSe
                 page += "<a href=\"" + getPath(now.getPath()) + "\">" + now.getPath() + extra + "</a><br>\r\n";
             }
         }
-        page += "</body>\r\n";
-        page += "</html>\r\n";
+        page += PageReader.readPage("/page2.html");
     }
 
     private String getPath(String message) {

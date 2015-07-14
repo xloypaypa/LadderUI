@@ -4,7 +4,6 @@ import control.event.AbstractSteep;
 import control.event.tool.ValueChecker;
 import control.listener.ListenerManager;
 import javafx.util.Pair;
-import log.LogManager;
 
 /**
  * Created by xlo on 15-6-23.

@@ -2,7 +2,6 @@ package main;
 
 import control.listener.ListenerManager;
 import log.LogManager;
-import log.NormalLog;
 import model.ErrorLog;
 import model.listener.NormalListener;
 import values.SystemStrings;
@@ -41,7 +40,7 @@ public class Main {
     }
 
     private static void setUpLog() {
-        NormalLog errorLog = new NormalLog();
+        ErrorLog errorLog = new ErrorLog();
         errorLog.setPath("./error.log");
         LogManager.getLogManager().putLog(SystemStrings.exception, errorLog);
     }
