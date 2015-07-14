@@ -3,8 +3,8 @@ package net;
 import model.pageReader.PageReader;
 import net.io.StringIOBuilder;
 import server.io.NormalFileIO;
-import tool.Connector;
-import tool.NormalConnector;
+import tool.connector.Connector;
+import tool.connector.NormalConnector;
 import tool.io.IO;
 import tool.io.NormalIO;
 

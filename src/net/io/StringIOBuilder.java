@@ -1,6 +1,6 @@
 package net.io;
 
-import tool.IOAble;
+import tool.ioAble.IOAble;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

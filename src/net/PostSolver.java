@@ -3,8 +3,8 @@ package net;
 import net.io.WriteFileIO;
 import server.io.FileIOBuilder;
 import server.server.solver.NormalSolver;
-import tool.Connector;
-import tool.NormalConnector;
+import tool.connector.Connector;
+import tool.connector.NormalConnector;
 import tool.io.IO;
 import tool.io.LengthLimitIO;
 
@@ -57,7 +57,7 @@ public class PostSolver extends NormalSolver {
 
     @Override
     public void connect() {
-        IO io = new LengthLimitIO(Integer.valueOf(this.requestSolver.getMessage("Content-Length")));
+        IO io = new LengthLimitIO(Long.valueOf(this.requestSolver.getMessage("Content-Length")));
         io.setInputStream(this.requestSolver.getInputStream());
         io.addOutputStream(this.fileIOBuilder.getOutputStream());
 
