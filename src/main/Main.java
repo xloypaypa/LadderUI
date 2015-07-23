@@ -18,8 +18,12 @@ import view.page.kidPage.StatusPage;
 public class Main {
 
     public static void main(String[] args) {
-        setUpLog();
-        setUpWindow();
+        try {
+            setUpLog();
+            setUpWindow();
+        } catch (Exception e) {
+            LogManager.getLogManager().writeLog(SystemStrings.exception, e.getMessage());
+        }
     }
 
     private static void setUpWindow() {
