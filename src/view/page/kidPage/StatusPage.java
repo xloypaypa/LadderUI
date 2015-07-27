@@ -1,7 +1,7 @@
 package view.page.kidPage;
 
 import control.Operator;
-import values.Settings;
+import values.SystemCount;
 import view.interfaceTool.button.HorizontalButtons;
 import view.interfaceTool.button.HorizontalRadioButtons;
 import view.interfaceTool.title.InputWithTitle;
@@ -44,7 +44,7 @@ public class StatusPage extends TabbedPageKidPage {
                 } else {
                     Operator.startTransfer(clientPort.getWords(), serverIP.getWords(), serverPort.getWords());
                 }
-                updateIOSize();
+                io.setText("0");
                 StatusPage.this.horizontalButtons.setVisible(false);
             }
         });
@@ -93,28 +93,7 @@ public class StatusPage extends TabbedPageKidPage {
         this.horizontalRadioButtons.setChoosen("http");
         show.add(this.horizontalRadioButtons);
 
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                while (true) {
-                    try {
-                        sleep(500);
-                        updateIOSize();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }.start();
-    }
-
-    public void updateIOSize() {
-        if (Operator.isOpen) {
-            StatusPage.this.io.setText(Settings.ioSize + "");
-        } else {
-            StatusPage.this.io.setText("-1");
-        }
+        SystemCount.action = () -> StatusPage.this.io.setText(SystemCount.ioNumber + "");
     }
 
     @Override

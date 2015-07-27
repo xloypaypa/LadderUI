@@ -33,6 +33,11 @@ public class MethodSolver extends AbstractSolver {
     }
 
     @Override
+    public boolean checkIP() {
+        return true;
+    }
+
+    @Override
     public void setRequestSolver(RequestSolver requestSolver) {
         this.requestSolver = requestSolver;
     }
