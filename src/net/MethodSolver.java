@@ -1,8 +1,8 @@
 package net;
 
-import server.server.requestSolver.RequestSolver;
-import server.server.solver.AbstractSolver;
-import server.server.solver.NormalSolver;
+import server.solver.RequestSolver;
+import server.solver.fileServer.AbstractSolver;
+import server.solver.fileServer.NormalSolver;
 
 import java.io.IOException;
 
@@ -19,11 +19,20 @@ public class MethodSolver extends AbstractSolver {
         if (this.requestSolver.getCommand().equals("POST")) {
             this.aimSolver = new PostSolver();
         } else if (this.requestSolver.getMessage("Get-folder-list") != null && this.requestSolver.getMessage("Get-folder-list").equals("true")) {
-            this.aimSolver = new ListFolderSolver();
+            this.aimSolver = new ListFolderSolver() {
+                public ListFolderSolver setRequestSolver(RequestSolver requestSolver) {
+                    this.requestSolver = requestSolver;
+                    return this;
+                }
+            }.setRequestSolver(this.requestSolver);
         } else {
-            this.aimSolver = new ShowFolderStoppableAllDownloadServer();
+            this.aimSolver = new ShowFolderStoppableAllDownloadServer() {
+                public ShowFolderStoppableAllDownloadServer setRequestSolver(RequestSolver requestSolver) {
+                    this.requestSolver = requestSolver;
+                    return this;
+                }
+            }.setRequestSolver(this.requestSolver);
         }
-        this.aimSolver.setRequestSolver(this.requestSolver);
         return this.aimSolver.sendPreMessage();
     }
 
@@ -38,12 +47,8 @@ public class MethodSolver extends AbstractSolver {
     }
 
     @Override
-    public void setRequestSolver(RequestSolver requestSolver) {
-        this.requestSolver = requestSolver;
-    }
-
-    @Override
     public boolean buildIO() {
+        this.requestSolver = this.requestSolverBuilder.getNewRequestSolver();
         this.requestSolver.setSocket(this.socket);
         return this.requestSolver.buildIO();
     }

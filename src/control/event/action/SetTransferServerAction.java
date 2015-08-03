@@ -4,7 +4,7 @@ import control.event.AbstractAction;
 import control.event.tool.ValueChecker;
 import control.listener.ListenerManager;
 import javafx.util.Pair;
-import proxy.server.TransferServer;
+import server.solver.proxy.server.TransferServer;
 
 /**
  * Created by xlo on 15-6-23.

@@ -2,11 +2,11 @@ package net;
 
 import model.pageReader.PageReader;
 import net.io.StringIOBuilder;
-import server.io.NormalFileIO;
 import tool.connector.Connector;
 import tool.connector.NormalConnector;
-import tool.io.IO;
-import tool.io.NormalIO;
+import tool.connector.io.IO;
+import tool.connector.io.NormalIO;
+import tool.ioAble.NormalFileIO;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;

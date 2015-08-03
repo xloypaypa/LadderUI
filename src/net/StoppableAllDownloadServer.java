@@ -1,6 +1,6 @@
 package net;
 
-import server.server.solver.AllDownloadSolver;
+import server.solver.fileServer.AllDownloadSolver;
 
 import java.io.IOException;
 

@@ -6,8 +6,8 @@
         <element id="file-copy" path="$PROJECT_DIR$/out/META-INF/MANIFEST.MF" />
       </element>
       <element id="module-output" name="LadderUI" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/../Ladder/out/artifacts/Ladder/Ladder.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/../HomeworkFramework/out/artifacts/HomeworkFrameWork/HomeworkFrameWork.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../Ladder/out/artifacts/Ladder/Ladder.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

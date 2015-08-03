@@ -5,7 +5,7 @@ import control.event.tool.ValueChecker;
 import control.listener.ListenerManager;
 import javafx.util.Pair;
 import net.MethodSolver;
-import server.server.Server;
+import server.Server;
 
 public class StartFileServerAction extends AbstractAction {
 

@@ -1,12 +1,12 @@
 package net;
 
 import net.io.WriteFileIO;
-import server.io.FileIOBuilder;
-import server.server.solver.NormalSolver;
+import server.solver.fileServer.NormalSolver;
 import tool.connector.Connector;
 import tool.connector.NormalConnector;
-import tool.io.IO;
-import tool.io.LengthLimitIO;
+import tool.connector.io.IO;
+import tool.connector.io.LengthLimitIO;
+import tool.ioAble.FileIOBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,7 +76,7 @@ public class PostSolver extends NormalSolver {
     public void disConnect() {
         super.disConnect();
         if (this.fileIOBuilder != null) {
-            this.fileIOBuilder.closeFile();
+            this.fileIOBuilder.close();
         }
     }
 }

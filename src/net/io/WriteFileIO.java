@@ -1,6 +1,6 @@
 package net.io;
 
-import server.io.NormalFileIO;
+import tool.ioAble.NormalFileIO;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

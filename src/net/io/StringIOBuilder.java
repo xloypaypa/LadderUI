@@ -18,8 +18,10 @@ public class StringIOBuilder implements IOAble {
         this.message = message;
     }
 
-    public void buildIO() {
+    @Override
+    public boolean buildIO() {
         this.inputStream = new ByteArrayInputStream(this.message.getBytes());
+        return true;
     }
 
     @Override
@@ -31,4 +33,7 @@ public class StringIOBuilder implements IOAble {
     public OutputStream getOutputStream() {
         return null;
     }
+
+    @Override
+    public void close() {}
 }

@@ -4,7 +4,7 @@ import control.event.AbstractAction;
 import control.event.tool.ValueChecker;
 import control.listener.ListenerManager;
 import javafx.util.Pair;
-import proxy.ProxyServer;
+import server.Server;
 
 /**
  * Created by xlo on 15-6-23.
@@ -13,8 +13,8 @@ import proxy.ProxyServer;
 public class StartServerAction extends AbstractAction {
     @Override
     protected void run() {
-        ProxyServer.getInstance((Integer) this.eventCallBack.getValue("client port"));
-        ProxyServer.accept();
+        Server.getInstance((Integer) this.eventCallBack.getValue("client port"));
+        Server.accept();
     }
 
     @Override

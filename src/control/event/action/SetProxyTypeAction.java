@@ -4,9 +4,9 @@ import control.event.AbstractAction;
 import control.event.tool.ValueChecker;
 import control.listener.ListenerManager;
 import javafx.util.Pair;
-import proxy.ProxyServer;
-import proxy.proxy.HttpProxy;
-import proxy.proxy.TransferProxy;
+import server.Server;
+import server.solver.proxy.HttpProxySolver;
+import server.solver.proxy.TransferProxySolver;
 
 /**
  * Created by xlo on 15-6-23.
@@ -16,9 +16,9 @@ public class SetProxyTypeAction extends AbstractAction {
     @Override
     protected void run() {
         if (this.eventCallBack.getValue("proxy type").equals("http")) {
-            ProxyServer.proxyBuilder = HttpProxy::new;
+            Server.solverBuilder = HttpProxySolver::new;
         } else {
-            ProxyServer.proxyBuilder = TransferProxy::new;
+            Server.solverBuilder = TransferProxySolver::new;
         }
     }
 
