@@ -8,6 +8,7 @@ import values.SystemStrings;
 import view.MainWindow;
 import view.main.WindowManager;
 import view.page.MainPage;
+import view.page.kidPage.ScriptPage;
 import view.page.kidPage.SettingPage;
 import view.page.kidPage.StatusPage;
 
@@ -37,6 +38,7 @@ public class Main {
         MainPage page = new MainPage();
         page.addPage(new StatusPage());
         page.addPage(new SettingPage());
+        page.addPage(new ScriptPage());
         mainWindow.addPage(page);
 
         WindowManager.addWindow(mainWindow);

@@ -1,7 +1,9 @@
 package control;
 
+import control.listener.ListenerManager;
 import control.logic.ServerLogic;
 import control.logic.UpdateSettingLogic;
+import script.ForceCacheScriptManager;
 
 /**
  * Created by xlo on 15-6-23.
@@ -54,5 +56,27 @@ public class Operator {
     public static void updateSetting(String bufferSize, String connectPause, String retryTimes,
                                      String talkRetryTimes, String timeLimit) {
         UpdateSettingLogic.updateSetting(bufferSize, connectPause, retryTimes, talkRetryTimes, timeLimit);
+    }
+
+    public static void loadScript(String path) {
+        try {
+            ForceCacheScriptManager.getForceCacheScriptManager().runScript(path);
+            ListenerManager.setOKMessage();
+            ListenerManager.UIAction();
+        } catch (Exception e) {
+            ListenerManager.setErrorMessage(e.getMessage());
+            ListenerManager.UIAction();
+        }
+    }
+
+    public static void runScript(String code) {
+        try {
+            Object object = ForceCacheScriptManager.getForceCacheScriptManager().runCommand(code);
+            ListenerManager.setInfoMessage(object.toString());
+            ListenerManager.UIAction();
+        } catch (Exception e) {
+            ListenerManager.setErrorMessage(e.getMessage());
+            ListenerManager.UIAction();
+        }
     }
 }
