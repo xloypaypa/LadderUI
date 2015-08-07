@@ -4,6 +4,7 @@ import control.listener.ListenerManager;
 import log.LogManager;
 import model.log.ErrorLog;
 import model.listener.NormalListener;
+import script.ForceCacheScriptManager;
 import values.SystemStrings;
 import view.MainWindow;
 import view.main.WindowManager;
@@ -20,6 +21,7 @@ import view.page.kidPage.StatusPage;
 public class Main {
 
     public static void main(String[] args) {
+        ForceCacheScriptManager.getForceCacheScriptManager();
         try {
             setUpLog();
             setUpWindow();
