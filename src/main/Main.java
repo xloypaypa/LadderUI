@@ -1,6 +1,7 @@
 package main;
 
 import control.listener.ListenerManager;
+import log.ConsoleLog;
 import log.LogManager;
 import model.log.ErrorLog;
 import model.listener.NormalListener;
@@ -8,6 +9,7 @@ import values.SystemStrings;
 import view.MainWindow;
 import view.main.WindowManager;
 import view.page.MainPage;
+import view.page.kidPage.ClientPage;
 import view.page.kidPage.ScriptPage;
 import view.page.kidPage.SettingPage;
 import view.page.kidPage.StatusPage;
@@ -19,6 +21,9 @@ import view.page.kidPage.StatusPage;
 public class Main {
 
     public static void main(String[] args) {
+        LogManager.getLogManager().putLog(SystemStrings.readHead, new ConsoleLog());
+        LogManager.getLogManager().putLog(SystemStrings.sendHead, new ConsoleLog());
+
         try {
             setUpLog();
             setUpWindow();
@@ -38,6 +43,7 @@ public class Main {
         MainPage page = new MainPage();
         page.addPage(new StatusPage());
         page.addPage(new SettingPage());
+        page.addPage(new ClientPage());
         page.addPage(new ScriptPage());
         mainWindow.addPage(page);
 
