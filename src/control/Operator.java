@@ -6,8 +6,6 @@ import control.logic.ServerLogic;
 import control.logic.UpdateSettingLogic;
 import script.ForceCacheScriptManager;
 
-import java.io.IOException;
-
 /**
  * Created by xlo on 15-6-23.
  * it's the main logic
@@ -83,14 +81,7 @@ public class Operator {
         }
     }
 
-    public static void runClient(String ip, String port, String robotName, String code) {
-        try {
-            ForceCacheScriptManager.getForceCacheScriptManager().runScript(code);
-        } catch (IOException e) {
-            ListenerManager.setErrorMessage(e.getMessage());
-            ListenerManager.UIAction();
-            return ;
-        }
+    public static void runClient(String ip, String port, String robotName) {
         new Thread() {
             @Override
             public void run() {

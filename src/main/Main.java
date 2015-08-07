@@ -40,9 +40,10 @@ public class Main {
         mainWindow.getInstance("main");
         MainPage page = new MainPage();
         page.addPage(new StatusPage());
-        page.addPage(new SettingPage());
         page.addPage(new ClientPage());
         page.addPage(new ScriptPage());
+        page.addPage(new SettingPage());
+
         mainWindow.addPage(page);
 
         WindowManager.addWindow(mainWindow);
