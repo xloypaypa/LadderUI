@@ -1,7 +1,6 @@
 package main;
 
 import control.listener.ListenerManager;
-import log.ConsoleLog;
 import log.LogManager;
 import model.log.ErrorLog;
 import model.listener.NormalListener;
@@ -21,9 +20,6 @@ import view.page.kidPage.StatusPage;
 public class Main {
 
     public static void main(String[] args) {
-        LogManager.getLogManager().putLog(SystemStrings.readHead, new ConsoleLog());
-        LogManager.getLogManager().putLog(SystemStrings.sendHead, new ConsoleLog());
-
         try {
             setUpLog();
             setUpWindow();

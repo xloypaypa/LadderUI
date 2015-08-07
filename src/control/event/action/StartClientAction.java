@@ -2,7 +2,6 @@ package control.event.action;
 
 import client.Client;
 import client.computerRobot.ComputerRobot;
-import client.computerRobot.RobotOperation;
 import client.computerRobot.RobotOperationManager;
 import control.event.AbstractAction;
 import control.event.tool.ValueChecker;
