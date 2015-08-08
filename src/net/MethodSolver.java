@@ -65,15 +65,9 @@ public class MethodSolver extends AbstractSolver {
 
     @Override
     public void disConnect() {
-        if (socket != null) {
-            try {
-                this.socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        super.closeSocket();
         if (this.aimSolver != null) {
-            this.aimSolver.disConnect();
+            this.aimSolver.closeSocket();
         }
     }
 }

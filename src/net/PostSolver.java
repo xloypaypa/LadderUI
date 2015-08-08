@@ -42,7 +42,7 @@ public class PostSolver extends NormalSolver {
         }
 
         this.fileIOBuilder = new WriteFileIO();
-        this.fileIOBuilder.setFile(this.file);
+        this.fileIOBuilder.setFile(this.file.getAbsolutePath());
         return this.fileIOBuilder.buildIO();
     }
 
@@ -74,7 +74,7 @@ public class PostSolver extends NormalSolver {
 
     @Override
     public void disConnect() {
-        super.disConnect();
+        this.closeSocket();
         if (this.fileIOBuilder != null) {
             this.fileIOBuilder.close();
         }

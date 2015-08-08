@@ -41,7 +41,7 @@ public class ShowFolderStoppableAllDownloadServer extends StoppableAllDownloadSe
         } else if (this.file.isFile()) {
             this.fileIOBuilder = new NormalFileIO();
             try {
-                this.fileIOBuilder.setFile(new File(URLDecoder.decode(this.requestSolver.getUrl().getFile(), "utf-8")));
+                this.fileIOBuilder.setFile(new File(URLDecoder.decode(this.requestSolver.getUrl().getFile(), "utf-8")).getAbsolutePath());
             } catch (UnsupportedEncodingException e) {
                 return false;
             }
