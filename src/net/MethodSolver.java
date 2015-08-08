@@ -4,8 +4,6 @@ import server.solver.RequestSolver;
 import server.solver.fileServer.AbstractSolver;
 import server.solver.fileServer.NormalSolver;
 
-import java.io.IOException;
-
 /**
  * Created by xlo on 15-7-14.
  * it's solver check post or get
