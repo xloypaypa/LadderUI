@@ -1,19 +1,29 @@
 package net;
 
 import server.solver.RequestSolver;
-import server.solver.fileServer.AbstractSolver;
-import server.solver.fileServer.NormalSolver;
+import server.solver.fileServer.AbstractServerSolver;
+import server.solver.fileServer.NormalServerSolver;
+import tool.connection.event.ConnectionEvent;
+import tool.connection.event.ConnectionEventManager;
 
 /**
  * Created by xlo on 15-7-14.
  * it's solver check post or get
  */
-public class MethodSolver extends AbstractSolver {
-    protected NormalSolver aimSolver;
+public class MethodSolver extends AbstractServerSolver {
+    protected NormalServerSolver aimSolver;
     protected RequestSolver requestSolver;
 
+    public MethodSolver() {
+        ConnectionEventManager.getConnectionEventManager().addEventHandlerToItem(ConnectionEvent.connectEnd, this,
+                (event, solver) -> {
+                    solver.closeSocket();
+                    MethodSolver.this.aimSolver.closeSocket();
+                });
+    }
+
     @Override
-    public boolean sendPreMessage() {
+    public boolean sendReply() {
         if (this.requestSolver.getCommand().equals("POST")) {
             this.aimSolver = new PostSolver();
         } else if (this.requestSolver.getMessage("Get-folder-list") != null && this.requestSolver.getMessage("Get-folder-list").equals("true")) {
@@ -31,7 +41,7 @@ public class MethodSolver extends AbstractSolver {
                 }
             }.setRequestSolver(this.requestSolver);
         }
-        return this.aimSolver.sendPreMessage();
+        return this.aimSolver.sendReply();
     }
 
     @Override
@@ -52,20 +62,12 @@ public class MethodSolver extends AbstractSolver {
     }
 
     @Override
-    public boolean readHead() {
+    public boolean readRequest() {
         return this.requestSolver.readHead();
     }
 
     @Override
     public boolean checkAccept() {
         return true;
-    }
-
-    @Override
-    public void disConnect() {
-        super.closeSocket();
-        if (this.aimSolver != null) {
-            this.aimSolver.closeSocket();
-        }
     }
 }

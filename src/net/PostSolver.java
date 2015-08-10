@@ -1,12 +1,14 @@
 package net;
 
 import net.io.WriteFileIO;
-import server.solver.fileServer.NormalSolver;
-import tool.connector.Connector;
-import tool.connector.NormalConnector;
-import tool.connector.io.IO;
-import tool.connector.io.LengthLimitIO;
+import server.solver.fileServer.NormalServerSolver;
+import tool.connection.event.ConnectionEvent;
+import tool.connection.event.ConnectionEventManager;
 import tool.ioAble.FileIOBuilder;
+import tool.streamConnector.NormalStreamConnector;
+import tool.streamConnector.StreamConnector;
+import tool.streamConnector.io.LengthLimitStreamIONode;
+import tool.streamConnector.io.NormalStreamIONode;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,9 +19,17 @@ import java.net.URLDecoder;
  * Created by xlo on 15-7-14.
  * it's check get or post
  */
-public class PostSolver extends NormalSolver {
+public class PostSolver extends NormalServerSolver {
     protected File file;
     protected FileIOBuilder fileIOBuilder;
+
+    public PostSolver() {
+        ConnectionEventManager.getConnectionEventManager().addEventHandlerToItem(ConnectionEvent.connectEnd, this,
+                (event, solver) -> {
+                    solver.closeSocket();
+                    PostSolver.this.fileIOBuilder.close();
+                });
+    }
 
     @Override
     protected boolean checkRequestExist() {
@@ -63,20 +73,12 @@ public class PostSolver extends NormalSolver {
 
     @Override
     public void connect() {
-        IO io = new LengthLimitIO(Long.valueOf(this.requestSolver.getMessage("Content-Length")));
+        NormalStreamIONode io = new LengthLimitStreamIONode(Long.valueOf(this.requestSolver.getMessage("Content-Length")));
         io.setInputStream(this.requestSolver.getInputStream());
         io.addOutputStream(this.fileIOBuilder.getOutputStream());
 
-        Connector connector = new NormalConnector();
+        StreamConnector connector = new NormalStreamConnector();
         connector.addMember(io);
         connector.connect();
-    }
-
-    @Override
-    public void disConnect() {
-        this.closeSocket();
-        if (this.fileIOBuilder != null) {
-            this.fileIOBuilder.close();
-        }
     }
 }

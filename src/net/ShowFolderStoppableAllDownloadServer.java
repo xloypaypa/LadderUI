@@ -2,11 +2,11 @@ package net;
 
 import model.pageReader.PageReader;
 import net.io.StringIOBuilder;
-import tool.connector.Connector;
-import tool.connector.NormalConnector;
-import tool.connector.io.IO;
-import tool.connector.io.NormalIO;
 import tool.ioAble.NormalFileIO;
+import tool.streamConnector.NormalStreamConnector;
+import tool.streamConnector.StreamConnector;
+import tool.streamConnector.io.NormalStreamIONode;
+import tool.streamConnector.io.StreamIONode;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -72,11 +72,11 @@ public class ShowFolderStoppableAllDownloadServer extends StoppableAllDownloadSe
             stringIOBuilder.setMessage(this.page);
             stringIOBuilder.buildIO();
 
-            IO io = new NormalIO();
+            StreamIONode io = new NormalStreamIONode();
             io.setInputStream(stringIOBuilder.getInputStream());
             io.addOutputStream(this.requestSolver.getOutputStream());
 
-            Connector connector = new NormalConnector();
+            StreamConnector connector = new NormalStreamConnector();
             connector.addMember(io);
             connector.connect();
         } else {

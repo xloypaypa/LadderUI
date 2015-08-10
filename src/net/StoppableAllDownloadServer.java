@@ -1,6 +1,6 @@
 package net;
 
-import server.solver.fileServer.AllDownloadSolver;
+import server.solver.fileServer.AllDownloadServerSolver;
 
 import java.io.IOException;
 
@@ -8,7 +8,7 @@ import java.io.IOException;
  * Created by xlo on 15-7-9.
  * it's the file server can be stoppable.
  */
-public class StoppableAllDownloadServer extends AllDownloadSolver {
+public class StoppableAllDownloadServer extends AllDownloadServerSolver {
     @Override
     protected boolean sendingHead() {
         this.requestSolver.setMessage("OK");
