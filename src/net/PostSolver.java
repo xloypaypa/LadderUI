@@ -1,7 +1,7 @@
 package net;
 
 import net.io.WriteFileIO;
-import server.solver.fileServer.NormalServerSolver;
+import server.solver.server.NormalServerSolver;
 import tool.connection.event.ConnectionEvent;
 import tool.connection.event.ConnectionEventManager;
 import tool.ioAble.FileIOBuilder;
