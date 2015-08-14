@@ -1,8 +1,8 @@
 package net;
 
-import server.solver.RequestSolver;
-import server.solver.server.AbstractServerSolver;
-import server.solver.server.NormalServerSolver;
+import server.serverSolver.RequestSolver;
+import server.serverSolver.normalServer.AbstractServerSolver;
+import server.serverSolver.normalServer.NormalServerSolver;
 import tool.connection.event.ConnectionEvent;
 import tool.connection.event.ConnectionEventManager;
 

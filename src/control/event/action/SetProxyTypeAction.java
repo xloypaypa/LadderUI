@@ -5,8 +5,8 @@ import control.event.tool.ValueChecker;
 import control.listener.ListenerManager;
 import javafx.util.Pair;
 import server.Server;
-import server.solver.proxy.HttpProxyServerSolver;
-import server.solver.proxy.TransferProxyServerSolver;
+import server.serverSolver.proxyServer.HttpProxyServerSolver;
+import server.serverSolver.proxyServer.TransferProxyServerSolver;
 
 /**
  * Created by xlo on 15-6-23.
