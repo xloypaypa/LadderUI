@@ -11,13 +11,13 @@
 
     <groupId>ladder</groupId>
     <artifactId>ladderui</artifactId>
-    <version>0.3-TESTER</version>
+    <version>0.3.4-TESTER</version>
 
     <dependencies>
         <dependency>
             <groupId>ladder</groupId>
             <artifactId>ladder</artifactId>
-            <version>0.9-LADDER</version>
+            <version>0.9.3-LADDER</version>
         </dependency>
         <dependency>
             <groupId>HomeworkFramework</groupId>
