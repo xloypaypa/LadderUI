@@ -22,7 +22,7 @@ public class ShowFolderStoppableAllDownloadServer extends StoppableAllDownloadSe
     @Override
     protected boolean checkRequestExist() {
         try {
-            this.file = new File(URLDecoder.decode(this.requestSolver.getUrl().getFile(), "utf-8"));
+            this.file = new File(URLDecoder.decode(this.requestSolver.getRequestHeadReader().getUrl().getFile(), "utf-8"));
         } catch (UnsupportedEncodingException e) {
             return false;
         }
@@ -41,7 +41,7 @@ public class ShowFolderStoppableAllDownloadServer extends StoppableAllDownloadSe
         } else if (this.file.isFile()) {
             this.fileIOBuilder = new NormalFileIO();
             try {
-                this.fileIOBuilder.setFile(new File(URLDecoder.decode(this.requestSolver.getUrl().getFile(), "utf-8")).getAbsolutePath());
+                this.fileIOBuilder.setFile(new File(URLDecoder.decode(this.requestSolver.getRequestHeadReader().getUrl().getFile(), "utf-8")).getAbsolutePath());
             } catch (UnsupportedEncodingException e) {
                 return false;
             }
@@ -54,12 +54,12 @@ public class ShowFolderStoppableAllDownloadServer extends StoppableAllDownloadSe
     @Override
     protected boolean sendingHead() {
         if (this.file.isDirectory()) {
-            this.requestSolver.setMessage("OK");
-            this.requestSolver.setVersion("HTTP/1.1");
-            this.requestSolver.setReply(200);
+            this.requestSolver.getReplyHeadWriter().setMessage("OK");
+            this.requestSolver.getReplyHeadWriter().setVersion("HTTP/1.1");
+            this.requestSolver.getReplyHeadWriter().setReply(200);
             buildPage();
             this.requestSolver.getReplyHeadWriter().addMessage("Content-Length", this.page.getBytes().length + "");
-            return this.requestSolver.sendHead();
+            return this.requestSolver.getReplyHeadWriter().sendHead();
         } else {
             return super.sendingHead();
         }
@@ -74,7 +74,7 @@ public class ShowFolderStoppableAllDownloadServer extends StoppableAllDownloadSe
 
             StreamIONode io = new NormalStreamIONode();
             io.setInputStream(stringIOBuilder.getInputStream());
-            io.addOutputStream(this.requestSolver.getOutputStream());
+            io.addOutputStream(this.requestSolver.getSocketIoBuilder().getOutputStream());
 
             StreamConnector connector = new NormalStreamConnector();
             connector.addMember(io);

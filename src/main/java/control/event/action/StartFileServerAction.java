@@ -11,9 +11,10 @@ public class StartFileServerAction extends AbstractAction {
 
     @Override
     protected void run() {
-        Server.solverBuilder = MethodSolver::new;
-        Server.getInstance((Integer) this.eventCallBack.getValue("client port"));
-        Server.accept();
+        Server server = (Server) this.eventCallBack.getValue("server");
+        server.setSolverBuilder(MethodSolver::new);
+        server.getInstance((Integer) this.eventCallBack.getValue("client port"));
+        server.accept();
     }
 
     @Override
@@ -21,6 +22,7 @@ public class StartFileServerAction extends AbstractAction {
         ValueChecker valueChecker = new ValueChecker();
         valueChecker.setEventCallBack(this.eventCallBack);
         valueChecker.addItem(new Pair<>("client port", Integer.class));
+        valueChecker.addItem(new Pair<>("server", Server.class));
         if (valueChecker.checkAllItem()) {
             return true;
         } else {

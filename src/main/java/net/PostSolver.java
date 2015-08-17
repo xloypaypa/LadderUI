@@ -34,7 +34,7 @@ public class PostSolver extends NormalServerSolver {
     @Override
     protected boolean checkRequestExist() {
         try {
-            this.file = new File(URLDecoder.decode(this.requestSolver.getUrl().getFile(), "utf-8"));
+            this.file = new File(URLDecoder.decode(this.requestSolver.getRequestHeadReader().getUrl().getFile(), "utf-8"));
         } catch (UnsupportedEncodingException e) {
             return false;
         }
@@ -58,12 +58,12 @@ public class PostSolver extends NormalServerSolver {
 
     @Override
     protected boolean sendingHead() {
-        this.requestSolver.setReply(200);
-        this.requestSolver.setMessage("OK");
-        this.requestSolver.setVersion("HTTP/1.1");
+        this.requestSolver.getReplyHeadWriter().setReply(200);
+        this.requestSolver.getReplyHeadWriter().setMessage("OK");
+        this.requestSolver.getReplyHeadWriter().setVersion("HTTP/1.1");
         this.requestSolver.getReplyHeadWriter().addMessage("Content-Length", "0");
         this.requestSolver.getReplyHeadWriter().addMessage("Content-Type", "text/html;charset=ISO-8859-1");
-        return this.requestSolver.sendHead();
+        return this.requestSolver.getReplyHeadWriter().sendHead();
     }
 
     @Override
@@ -73,8 +73,8 @@ public class PostSolver extends NormalServerSolver {
 
     @Override
     public void connect() {
-        NormalStreamIONode io = new LengthLimitStreamIONode(Long.valueOf(this.requestSolver.getMessage("Content-Length")));
-        io.setInputStream(this.requestSolver.getInputStream());
+        NormalStreamIONode io = new LengthLimitStreamIONode(Long.valueOf(this.requestSolver.getRequestHeadReader().getMessage("Content-Length")));
+        io.setInputStream(this.requestSolver.getSocketIoBuilder().getInputStream());
         io.addOutputStream(this.fileIOBuilder.getOutputStream());
 
         StreamConnector connector = new NormalStreamConnector();

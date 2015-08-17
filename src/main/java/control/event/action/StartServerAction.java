@@ -13,8 +13,9 @@ import server.Server;
 public class StartServerAction extends AbstractAction {
     @Override
     protected void run() {
-        Server.getInstance((Integer) this.eventCallBack.getValue("client port"));
-        Server.accept();
+        Server server = (Server) this.eventCallBack.getValue("server");
+        server.getInstance((Integer) this.eventCallBack.getValue("client port"));
+        server.accept();
     }
 
     @Override
@@ -22,6 +23,7 @@ public class StartServerAction extends AbstractAction {
         ValueChecker valueChecker = new ValueChecker();
         valueChecker.setEventCallBack(this.eventCallBack);
         valueChecker.addItem(new Pair<>("client port", Integer.class));
+        valueChecker.addItem(new Pair<>("server", Server.class));
         if (valueChecker.checkAllItem()) {
             return true;
         } else {

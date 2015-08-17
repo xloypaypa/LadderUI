@@ -11,19 +11,19 @@ import java.io.IOException;
 public class StoppableAllDownloadServer extends AllDownloadServerSolver {
     @Override
     protected boolean sendingHead() {
-        this.requestSolver.setMessage("OK");
-        this.requestSolver.setVersion("HTTP/1.1");
+        this.requestSolver.getReplyHeadWriter().setMessage("OK");
+        this.requestSolver.getReplyHeadWriter().setVersion("HTTP/1.1");
         this.requestSolver.getReplyHeadWriter().addMessage("Content-Disposition", "attachment;filename=" + this.file.getName());
 
-        if (this.requestSolver.getMessage("Range") == null) {
-            this.requestSolver.setReply(200);
+        if (this.requestSolver.getRequestHeadReader().getMessage("Range") == null) {
+            this.requestSolver.getReplyHeadWriter().setReply(200);
             this.requestSolver.getReplyHeadWriter().addMessage("Content-Length", "" + this.file.length());
         } else {
-            this.requestSolver.setReply(206);
-            String range = this.requestSolver.getMessage("Range");
+            this.requestSolver.getReplyHeadWriter().setReply(206);
+            String range = this.requestSolver.getRequestHeadReader().getMessage("Range");
             if (!solveRangeMessage(range)) return false;
         }
-        return this.requestSolver.sendHead();
+        return this.requestSolver.getReplyHeadWriter().sendHead();
     }
 
     protected boolean solveRangeMessage(String range) {

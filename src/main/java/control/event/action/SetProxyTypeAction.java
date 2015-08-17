@@ -15,10 +15,11 @@ import server.serverSolver.proxyServer.TransferProxyServerSolver;
 public class SetProxyTypeAction extends AbstractAction {
     @Override
     protected void run() {
+        Server server = (Server) this.eventCallBack.getValue("server");
         if (this.eventCallBack.getValue("proxy type").equals("http")) {
-            Server.solverBuilder = HttpProxyServerSolver::new;
+            server.setSolverBuilder(HttpProxyServerSolver::new);
         } else {
-            Server.solverBuilder = TransferProxyServerSolver::new;
+            server.setSolverBuilder(TransferProxyServerSolver::new);
         }
     }
 
@@ -27,6 +28,7 @@ public class SetProxyTypeAction extends AbstractAction {
         ValueChecker valueChecker = new ValueChecker();
         valueChecker.setEventCallBack(this.eventCallBack);
         valueChecker.addItem(new Pair<>("proxy type", String.class));
+        valueChecker.addItem(new Pair<>("server", Server.class));
         if (valueChecker.checkAllItem()) {
             return true;
         } else {

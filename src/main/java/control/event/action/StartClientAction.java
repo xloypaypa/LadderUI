@@ -21,7 +21,8 @@ public class StartClientAction extends AbstractAction {
         computerRobot.setRobotOperation(RobotOperationManager.getRobotOperationManager().get((String) this.eventCallBack.getValue("name")));
         computerRobot.setReplyHeadReader(new NormalReplyHeadReader());
         computerRobot.setRequestHeadWriter(new CustomRequestHeadWriter());
-        Client.connect((String) this.eventCallBack.getValue("host"), (Integer) this.eventCallBack.getValue("port"), computerRobot);
+        Client client = (Client) this.eventCallBack.getValue("client");
+        client.connect((String) this.eventCallBack.getValue("host"), (Integer) this.eventCallBack.getValue("port"), computerRobot);
     }
 
     @Override
@@ -31,6 +32,7 @@ public class StartClientAction extends AbstractAction {
         valueChecker.addItem(new Pair<>("port", Integer.class));
         valueChecker.addItem(new Pair<>("host", String.class));
         valueChecker.addItem(new Pair<>("name", String.class));
+        valueChecker.addItem(new Pair<>("client", Client.class));
         if (valueChecker.checkAllItem()) {
             return true;
         } else {

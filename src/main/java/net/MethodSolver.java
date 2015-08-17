@@ -24,9 +24,10 @@ public class MethodSolver extends AbstractServerSolver {
 
     @Override
     public boolean sendReply() {
-        if (this.requestSolver.getCommand().equals("POST")) {
+        if (this.requestSolver.getRequestHeadReader().getCommand().equals("POST")) {
             this.aimSolver = new PostSolver();
-        } else if (this.requestSolver.getMessage("Get-folder-list") != null && this.requestSolver.getMessage("Get-folder-list").equals("true")) {
+        } else if (this.requestSolver.getRequestHeadReader().getMessage("Get-folder-list") != null
+                && this.requestSolver.getRequestHeadReader().getMessage("Get-folder-list").equals("true")) {
             this.aimSolver = new ListFolderSolver() {
                 public ListFolderSolver setRequestSolver(RequestSolver requestSolver) {
                     this.requestSolver = requestSolver;
@@ -57,13 +58,18 @@ public class MethodSolver extends AbstractServerSolver {
     @Override
     public boolean buildIO() {
         this.requestSolver = this.requestSolverBuilder.getNewRequestSolver();
-        this.requestSolver.setSocket(this.socket);
-        return this.requestSolver.buildIO();
+        this.requestSolver.getSocketIoBuilder().setSocket(this.socket);
+        if (this.requestSolver.getSocketIoBuilder().buildIO()) {
+            this.requestSolver.getRequestHeadReader().setInputStream(this.requestSolver.getSocketIoBuilder().getInputStream());
+            this.requestSolver.getReplyHeadWriter().setOutputStream(this.requestSolver.getSocketIoBuilder().getOutputStream());
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean readRequest() {
-        return this.requestSolver.readHead();
+        return this.requestSolver.getRequestHeadReader().readHead();
     }
 
     @Override
