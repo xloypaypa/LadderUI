@@ -1,50 +1,35 @@
 package control.event.action;
 
-import control.event.AbstractAction;
-import control.event.tool.ValueChecker;
-import control.listener.ListenerManager;
-import javafx.util.Pair;
+import control.action.DirectRunAction;
 import values.Settings;
 
 /**
  * Created by xlo on 15-6-23.
  * it's updating setting's action
  */
-public class UpdateSettingAction extends AbstractAction {
-    @Override
-    protected void run() {
-        Settings.bufferSize = (int) this.eventCallBack.getValue("buffer size");
-        Settings.connectPause = (int) this.eventCallBack.getValue("connect pause");
-        Settings.retryTimes = (int) this.eventCallBack.getValue("retry time");
-        Settings.talkRetryTimes = (int) this.eventCallBack.getValue("talk retry time");
-        Settings.timeLimit = (int) this.eventCallBack.getValue("time limit");
+public class UpdateSettingAction extends DirectRunAction {
+    int bufferSize, connectPause, retryTime, talkRetryTime, timeLimit;
+
+    public UpdateSettingAction(int bufferSize, int connectPause, int retryTime, int talkRetryTime, int timeLimit) {
+        this.bufferSize = bufferSize;
+        this.connectPause = connectPause;
+        this.retryTime = retryTime;
+        this.talkRetryTime = talkRetryTime;
+        this.timeLimit = timeLimit;
     }
 
     @Override
-    protected boolean checkNeedData() {
-        ValueChecker valueChecker = new ValueChecker();
-        valueChecker.setEventCallBack(this.eventCallBack);
-        valueChecker.addItem(new Pair<>("buffer size", Integer.class));
-        valueChecker.addItem(new Pair<>("connect pause", Integer.class));
-        valueChecker.addItem(new Pair<>("retry time", Integer.class));
-        valueChecker.addItem(new Pair<>("talk retry time", Integer.class));
-        valueChecker.addItem(new Pair<>("time limit", Integer.class));
-        if (valueChecker.checkAllItem()) {
-            return true;
-        } else {
-            ListenerManager.setErrorMessage("Data not found!");
-            ListenerManager.UIAction();
-            return false;
-        }
-    }
-
-    @Override
-    protected void putData() {
+    protected void loadNextEvents() {
 
     }
 
     @Override
-    protected String getNextSteep() {
-        return null;
+    public Boolean call() throws Exception {
+        Settings.bufferSize = this.bufferSize;
+        Settings.connectPause = this.connectPause;
+        Settings.retryTimes = this.retryTime;
+        Settings.talkRetryTimes = this.talkRetryTime;
+        Settings.timeLimit = this.timeLimit;
+        return true;
     }
 }

@@ -1,6 +1,5 @@
 package control.logic;
 
-import control.event.NormalEvent;
 import control.event.action.UpdateSettingAction;
 import control.event.steep.StringToIntegerSteep;
 
@@ -11,20 +10,11 @@ import control.event.steep.StringToIntegerSteep;
 public class UpdateSettingLogic {
     public static void updateSetting(String bufferSize, String connectPause, String retryTimes,
                                      String talkRetryTimes, String timeLimit) {
-        NormalEvent event = new NormalEvent();
-        event.addSteep("buffer", new StringToIntegerSteep("buffer size", "connect"));
-        event.addSteep("connect", new StringToIntegerSteep("connect pause", "retry"));
-        event.addSteep("retry", new StringToIntegerSteep("retry time", "talk"));
-        event.addSteep("talk", new StringToIntegerSteep("talk retry time", "time"));
-        event.addSteep("time", new StringToIntegerSteep("time limit", UpdateSettingAction.class.getSimpleName()));
-        event.addSteep(new UpdateSettingAction());
-
-        event.putValue("buffer size", bufferSize);
-        event.putValue("connect pause", connectPause);
-        event.putValue("retry time", retryTimes);
-        event.putValue("talk retry time", talkRetryTimes);
-        event.putValue("time limit", timeLimit);
-
-        event.runEvent("buffer");
+        new StringToIntegerSteep(bufferSize, connectPause, retryTimes, talkRetryTimes, timeLimit) {
+            @Override
+            protected void loadNextEvents() {
+                this.addDoneEvent(new UpdateSettingAction(this.result[0], this.result[1], this.result[2], this.result[3], this.result[4]));
+            }
+        }.run();
     }
 }

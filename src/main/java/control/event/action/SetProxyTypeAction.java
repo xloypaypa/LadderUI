@@ -1,9 +1,6 @@
 package control.event.action;
 
-import control.event.AbstractAction;
-import control.event.tool.ValueChecker;
-import control.listener.ListenerManager;
-import javafx.util.Pair;
+import control.action.DirectRunAction;
 import server.Server;
 import server.serverSolver.proxyServer.HttpProxyServerSolver;
 import server.serverSolver.proxyServer.TransferProxyServerSolver;
@@ -12,39 +9,29 @@ import server.serverSolver.proxyServer.TransferProxyServerSolver;
  * Created by xlo on 15-6-23.
  * it's the action of set proxy type.
  */
-public class SetProxyTypeAction extends AbstractAction {
+public class SetProxyTypeAction extends DirectRunAction {
+    Server server;
+    String type;
+    int port;
+
+    public SetProxyTypeAction(String type, int port) {
+        this.type = type;
+        this.port = port;
+    }
+
     @Override
-    protected void run() {
-        Server server = (Server) this.eventCallBack.getValue("server");
-        if (this.eventCallBack.getValue("proxy type").equals("http")) {
+    protected void loadNextEvents() {
+        this.addDoneEvent(new StartServerAction(server, port));
+    }
+
+    @Override
+    public Boolean call() throws Exception {
+        server = Server.getNewServer();
+        if (this.type.equals("http")) {
             server.setSolverBuilder(HttpProxyServerSolver::new);
         } else {
             server.setSolverBuilder(TransferProxyServerSolver::new);
         }
-    }
-
-    @Override
-    protected boolean checkNeedData() {
-        ValueChecker valueChecker = new ValueChecker();
-        valueChecker.setEventCallBack(this.eventCallBack);
-        valueChecker.addItem(new Pair<>("proxy type", String.class));
-        valueChecker.addItem(new Pair<>("server", Server.class));
-        if (valueChecker.checkAllItem()) {
-            return true;
-        } else {
-            ListenerManager.setErrorMessage("Data not found!");
-            ListenerManager.UIAction();
-            return false;
-        }
-    }
-
-    @Override
-    protected void putData() {
-
-    }
-
-    @Override
-    protected String getNextSteep() {
-        return StartServerAction.class.getSimpleName();
+        return true;
     }
 }

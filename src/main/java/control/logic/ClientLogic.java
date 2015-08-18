@@ -1,7 +1,5 @@
 package control.logic;
 
-import client.Client;
-import control.event.NormalEvent;
 import control.event.action.StartClientAction;
 import control.event.steep.StringToIntegerSteep;
 
@@ -11,13 +9,11 @@ import control.event.steep.StringToIntegerSteep;
  */
 public class ClientLogic {
     public static void startClient(String ip, String port, String robotName) {
-        NormalEvent event = new NormalEvent();
-        event.addSteep(new StringToIntegerSteep("port", StartClientAction.class.getSimpleName()));
-        event.addSteep(new StartClientAction());
-        event.putValue("client", Client.getNewClient());
-        event.putValue("port", port);
-        event.putValue("host", ip);
-        event.putValue("name", robotName);
-        event.runEvent(StringToIntegerSteep.class.getSimpleName());
+        new StringToIntegerSteep(port) {
+            @Override
+            protected void loadNextEvents() {
+                this.addDoneEvent(new StartClientAction(robotName, ip, this.result[0]));
+            }
+        }.run();
     }
 }

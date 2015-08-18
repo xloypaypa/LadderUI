@@ -3,10 +3,7 @@ package control.event.action;
 import client.Client;
 import client.computerRobot.ComputerRobot;
 import client.computerRobot.RobotOperationManager;
-import control.event.AbstractAction;
-import control.event.tool.ValueChecker;
-import control.listener.ListenerManager;
-import javafx.util.Pair;
+import control.action.DirectRunAction;
 import tool.head.reader.NormalReplyHeadReader;
 import tool.head.writer.CustomRequestHeadWriter;
 
@@ -14,41 +11,30 @@ import tool.head.writer.CustomRequestHeadWriter;
  * Created by xlo on 2015/8/7.
  * it's the action start client
  */
-public class StartClientAction extends AbstractAction {
+public class StartClientAction extends DirectRunAction {
+    String name, host;
+    Client client;
+    int port;
+
+    public StartClientAction(String name, String host, int port) {
+        this.name = name;
+        this.host = host;
+        this.port = port;
+    }
+
     @Override
-    protected void run() {
+    protected void loadNextEvents() {
+
+    }
+
+    @Override
+    public Boolean call() throws Exception {
+        client = Client.getNewClient();
         ComputerRobot computerRobot = new ComputerRobot();
-        computerRobot.setRobotOperation(RobotOperationManager.getRobotOperationManager().get((String) this.eventCallBack.getValue("name")));
+        computerRobot.setRobotOperation(RobotOperationManager.getRobotOperationManager().get(name));
         computerRobot.setReplyHeadReader(new NormalReplyHeadReader());
         computerRobot.setRequestHeadWriter(new CustomRequestHeadWriter());
-        Client client = (Client) this.eventCallBack.getValue("client");
-        client.connect((String) this.eventCallBack.getValue("host"), (Integer) this.eventCallBack.getValue("port"), computerRobot);
-    }
-
-    @Override
-    protected boolean checkNeedData() {
-        ValueChecker valueChecker = new ValueChecker();
-        valueChecker.setEventCallBack(this.eventCallBack);
-        valueChecker.addItem(new Pair<>("port", Integer.class));
-        valueChecker.addItem(new Pair<>("host", String.class));
-        valueChecker.addItem(new Pair<>("name", String.class));
-        valueChecker.addItem(new Pair<>("client", Client.class));
-        if (valueChecker.checkAllItem()) {
-            return true;
-        } else {
-            ListenerManager.setErrorMessage("Data not found!");
-            ListenerManager.UIAction();
-            return false;
-        }
-    }
-
-    @Override
-    protected void putData() {
-
-    }
-
-    @Override
-    protected String getNextSteep() {
-        return null;
+        client.connect(host, port, computerRobot);
+        return true;
     }
 }
