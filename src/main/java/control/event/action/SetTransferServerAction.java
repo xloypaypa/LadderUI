@@ -1,7 +1,7 @@
 package control.event.action;
 
 import control.action.DirectRunAction;
-import server.serverSolver.proxyServer.proxyThirdServer.TransferServer;
+import server.serverSolver.proxyServer.proxyThirdServer.TransferThirdServer;
 
 /**
  * Created by xlo on 15-6-23.
@@ -25,8 +25,8 @@ public class SetTransferServerAction extends DirectRunAction {
 
     @Override
     public Boolean call() throws Exception {
-        TransferServer.setHost(serverIp);
-        TransferServer.setPort(serverPort);
+        TransferThirdServer.setHost(serverIp);
+        TransferThirdServer.setPort(serverPort);
         return true;
     }
 }
