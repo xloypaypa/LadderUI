@@ -35,13 +35,8 @@ public class Main {
         panel.setBounds(0, 0, 300, 600);
         jTabbedPane.add("file", panel);
 
-        JLabel portLabel = new JLabel("port:");
-        portLabel.setBounds(10, 10, 70, 20);
-        panel.add(portLabel);
-
-        JTextField port = new JTextField("8081");
-        port.setBounds(80, 10, 100, 20);
-        panel.add(port);
+        JTextField port = addThreadNum(panel, "port:", "8081", 10, 10);
+        JTextField num = addThreadNum(panel, "work thread:", "5", 150, 10);
 
         JButton button = new JButton("start");
         button.setBounds(10, 500, 200, 20);
@@ -52,7 +47,7 @@ public class Main {
                     @Override
                     public void run() {
                         try {
-                            startServer(Integer.valueOf(port.getText()));
+                            startServer(Integer.valueOf(port.getText()), Integer.valueOf(num.getText()));
                         } catch (Exception e) {
                             JOptionPane.showMessageDialog(null, e.getMessage(), "error", JOptionPane.ERROR_MESSAGE);
                         }
@@ -60,6 +55,7 @@ public class Main {
                 }.start();
                 button.setEnabled(false);
                 port.setEnabled(false);
+                num.setEnabled(false);
                 panel.updateUI();
             }
         });
@@ -72,29 +68,11 @@ public class Main {
         panel.setBounds(0, 0, 300, 600);
         jTabbedPane.add("transfer", panel);
 
-        JLabel portLabel = new JLabel("port:");
-        portLabel.setBounds(10, 10, 70, 20);
-        panel.add(portLabel);
+        JTextField port = addThreadNum(panel, "port:", "8000", 10, 10);
+        JTextField num = addThreadNum(panel, "work thread:", "5", 150, 10);
 
-        JTextField port = new JTextField("8000");
-        port.setBounds(80, 10, 100, 20);
-        panel.add(port);
-
-        JLabel serverHostLabel = new JLabel("server host:");
-        serverHostLabel.setBounds(10, 40, 70, 20);
-        panel.add(serverHostLabel);
-
-        JTextField serverHost = new JTextField("127.0.0.1");
-        serverHost.setBounds(80, 40, 100, 20);
-        panel.add(serverHost);
-
-        JLabel serverPortLabel = new JLabel("server port:");
-        serverPortLabel.setBounds(10, 70, 70, 20);
-        panel.add(serverPortLabel);
-
-        JTextField serverPort = new JTextField("8080");
-        serverPort.setBounds(80, 70, 100, 20);
-        panel.add(serverPort);
+        JTextField serverHost = addThreadNum(panel, "server host:", "127.0.0.1", 10, 60);
+        JTextField serverPort = addThreadNum(panel, "server port:", "8080", 150, 60);
 
         JButton button = new JButton("start");
         button.setBounds(10, 500, 200, 20);
@@ -105,7 +83,7 @@ public class Main {
                     @Override
                     public void run() {
                         try {
-                            startTransfer(Integer.valueOf(port.getText()), serverHost.getText(), Integer.valueOf(serverPort.getText()));
+                            startTransfer(Integer.valueOf(port.getText()), serverHost.getText(), Integer.valueOf(serverPort.getText()), Integer.valueOf(num.getText()));
                         } catch (Exception e) {
                             JOptionPane.showMessageDialog(null, e.getMessage(), "error", JOptionPane.ERROR_MESSAGE);
                         }
@@ -115,6 +93,7 @@ public class Main {
                 port.setEnabled(false);
                 serverHost.setEnabled(false);
                 serverPort.setEnabled(false);
+                num.setEnabled(false);
                 panel.updateUI();
             }
         });
@@ -127,13 +106,8 @@ public class Main {
         panel.setBounds(0, 0, 300, 600);
         jTabbedPane.add("proxy", panel);
 
-        JLabel portLabel = new JLabel("port:");
-        portLabel.setBounds(10, 10, 70, 20);
-        panel.add(portLabel);
-
-        JTextField port = new JTextField("8080");
-        port.setBounds(80, 10, 100, 20);
-        panel.add(port);
+        JTextField port = addThreadNum(panel, "port:", "8080", 10, 10);
+        JTextField num = addThreadNum(panel, "work thread:", "5", 150, 10);
 
         JButton button = new JButton("start");
         button.setBounds(10, 500, 200, 20);
@@ -144,7 +118,7 @@ public class Main {
                     @Override
                     public void run() {
                         try {
-                            startProxy(Integer.valueOf(port.getText()));
+                            startProxy(Integer.valueOf(port.getText()), Integer.valueOf(num.getText()));
                         } catch (Exception e) {
                             JOptionPane.showMessageDialog(null, e.getMessage(), "error", JOptionPane.ERROR_MESSAGE);
                         }
@@ -152,6 +126,7 @@ public class Main {
                 }.start();
                 button.setEnabled(false);
                 port.setEnabled(false);
+                num.setEnabled(false);
                 panel.updateUI();
             }
         });
@@ -159,21 +134,32 @@ public class Main {
         panel.updateUI();
     }
 
-    private static void startServer(int port) {
+    private static JTextField addThreadNum(JPanel panel, String title, String value, int x, int height) {
+        JLabel numLabel = new JLabel(title);
+        numLabel.setBounds(x, height, 100, 20);
+        panel.add(numLabel);
+
+        JTextField num = new JTextField(value);
+        num.setBounds(x, height + 20, 100, 20);
+        panel.add(num);
+        return num;
+    }
+
+    private static void startServer(int port, int selectorNum) {
         Server server = Server.getNewServer(MethodSolver::new);
-        server.getInstance(port, 5);
+        server.getInstance(port, selectorNum);
         server.accept();
     }
 
-    private static void startTransfer(int port, String serverHost, int serverPort) {
+    private static void startTransfer(int port, String serverHost, int serverPort, int selectorNum) {
         Server server = Server.getNewServer(() -> new TransferProxyReadServer(new ConnectionMessageImpl(), serverHost, serverPort));
-        server.getInstance(port, 5);
+        server.getInstance(port, selectorNum);
         server.accept();
     }
 
-    private static void startProxy(int port) {
+    private static void startProxy(int port, int selectorNum) {
         Server server = Server.getNewServer();
-        server.getInstance(port, 5);
+        server.getInstance(port, selectorNum);
         server.accept();
     }
 }
