@@ -7,6 +7,8 @@ import net.tool.connectionSolver.ConnectionMessageImpl;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * Created by xlo on 15-6-21.
@@ -19,24 +21,31 @@ public class Main {
         frame.setSize(300, 600);
         frame.setLayout(null);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setVisible(true);
 
         JTabbedPane jTabbedPane = new JTabbedPane();
         jTabbedPane.setBounds(0, 0, 300, 600);
         frame.add(jTabbedPane);
 
-        proxyPage(jTabbedPane);
-        transferProxyPage(jTabbedPane);
-        fileServerPage(jTabbedPane);
+        try {
+            proxyPage(jTabbedPane);
+            transferProxyPage(jTabbedPane);
+            fileServerPage(jTabbedPane);
+        } catch (UnknownHostException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        frame.setVisible(true);
     }
 
-    protected static void fileServerPage(JTabbedPane jTabbedPane) {
+    protected static void fileServerPage(JTabbedPane jTabbedPane) throws UnknownHostException {
         JPanel panel = new JPanel(null, true);
         panel.setBounds(0, 0, 300, 600);
         jTabbedPane.add("file", panel);
 
-        JTextField port = addThreadNum(panel, "port:", "8081", 10, 10);
-        JTextField num = addThreadNum(panel, "work thread:", "5", 150, 10);
+        showIp(panel);
+
+        JTextField port = addThreadNum(panel, "port:", "8081", 10, 30);
+        JTextField num = addThreadNum(panel, "work thread:", "5", 150, 30);
 
         JButton button = new JButton("start");
         button.setBounds(10, 500, 200, 20);
@@ -63,16 +72,18 @@ public class Main {
         panel.updateUI();
     }
 
-    protected static void transferProxyPage(JTabbedPane jTabbedPane) {
+    protected static void transferProxyPage(JTabbedPane jTabbedPane) throws UnknownHostException {
         JPanel panel = new JPanel(null, true);
         panel.setBounds(0, 0, 300, 600);
         jTabbedPane.add("transfer", panel);
 
-        JTextField port = addThreadNum(panel, "port:", "8000", 10, 10);
-        JTextField num = addThreadNum(panel, "work thread:", "5", 150, 10);
+        showIp(panel);
 
-        JTextField serverHost = addThreadNum(panel, "server host:", "127.0.0.1", 10, 60);
-        JTextField serverPort = addThreadNum(panel, "server port:", "8080", 150, 60);
+        JTextField port = addThreadNum(panel, "port:", "8000", 10, 30);
+        JTextField num = addThreadNum(panel, "work thread:", "5", 150, 30);
+
+        JTextField serverHost = addThreadNum(panel, "server host:", "127.0.0.1", 10, 80);
+        JTextField serverPort = addThreadNum(panel, "server port:", "8080", 150, 80);
 
         JButton button = new JButton("start");
         button.setBounds(10, 500, 200, 20);
@@ -101,13 +112,15 @@ public class Main {
         panel.updateUI();
     }
 
-    protected static void proxyPage(JTabbedPane jTabbedPane) {
+    protected static void proxyPage(JTabbedPane jTabbedPane) throws UnknownHostException {
         JPanel panel = new JPanel(null, true);
         panel.setBounds(0, 0, 300, 600);
         jTabbedPane.add("proxy", panel);
 
-        JTextField port = addThreadNum(panel, "port:", "8080", 10, 10);
-        JTextField num = addThreadNum(panel, "work thread:", "5", 150, 10);
+        showIp(panel);
+
+        JTextField port = addThreadNum(panel, "port:", "8080", 10, 30);
+        JTextField num = addThreadNum(panel, "work thread:", "5", 150, 30);
 
         JButton button = new JButton("start");
         button.setBounds(10, 500, 200, 20);
@@ -132,6 +145,18 @@ public class Main {
         });
         panel.add(button);
         panel.updateUI();
+    }
+
+    private static void showIp(JPanel panel) throws UnknownHostException {
+        InetAddress address = InetAddress.getLocalHost();
+        JLabel label = new JLabel("your ip:");
+        label.setBounds(10, 10, 50, 20);
+        panel.add(label);
+
+        JTextField jLabel = new JTextField(address.getHostAddress());
+        jLabel.setBounds(60, 10, 200, 20);
+        jLabel.setEditable(false);
+        panel.add(jLabel);
     }
 
     private static JTextField addThreadNum(JPanel panel, String title, String value, int x, int height) {
