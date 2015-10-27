@@ -17,12 +17,7 @@
         <dependency>
             <groupId>ladder</groupId>
             <artifactId>ladder</artifactId>
-            <version>0.9.3-LADDER</version>
-        </dependency>
-        <dependency>
-            <groupId>HomeworkFramework</groupId>
-            <artifactId>HomeworkFramework</artifactId>
-            <version>0.2.0</version>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>

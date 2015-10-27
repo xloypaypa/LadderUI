@@ -1,18 +1,7 @@
 package main;
 
-import control.listener.ListenerManager;
-import log.LogManager;
-import model.log.ErrorLog;
-import model.listener.NormalListener;
-import script.ForceCacheScriptManager;
-import values.SystemStrings;
-import view.MainWindow;
-import view.main.WindowManager;
-import view.page.MainPage;
-import view.page.kidPage.ClientPage;
-import view.page.kidPage.ScriptPage;
-import view.page.kidPage.SettingPage;
-import view.page.kidPage.StatusPage;
+import net.MethodSolver;
+import net.server.Server;
 
 /**
  * Created by xlo on 15-6-21.
@@ -21,38 +10,29 @@ import view.page.kidPage.StatusPage;
 public class Main {
 
     public static void main(String[] args) {
-        ForceCacheScriptManager.getForceCacheScriptManager();
-        try {
-            setUpLog();
-            setUpWindow();
-        } catch (Exception e) {
-            LogManager.getLogManager().writeLog(SystemStrings.exception, e.getMessage());
-        }
+//        new Thread() {
+//            @Override
+//            public void run() {
+//                startProxy(8000);
+//            }
+//        }.start();
+        new Thread() {
+            @Override
+            public void run() {
+                startServer(8080);
+            }
+        }.start();
     }
 
-    private static void setUpWindow() {
-        ListenerManager.addListener("main", new NormalListener());
-        ListenerManager.useListenser("main");
-        LogManager.getLogManager().putLog(SystemStrings.exception, new ErrorLog());
-
-        MainWindow mainWindow = new MainWindow();
-
-        mainWindow.getInstance("main");
-        MainPage page = new MainPage();
-        page.addPage(new StatusPage());
-        page.addPage(new ClientPage());
-        page.addPage(new ScriptPage());
-        page.addPage(new SettingPage());
-
-        mainWindow.addPage(page);
-
-        WindowManager.addWindow(mainWindow);
-        WindowManager.createWindow("main");
+    private static void startServer(int port) {
+        Server server = Server.getNewServer(MethodSolver::new);
+        server.getInstance(port, 5);
+        server.accept();
     }
 
-    private static void setUpLog() {
-        ErrorLog errorLog = new ErrorLog();
-        errorLog.setPath("./error.log");
-        LogManager.getLogManager().putLog(SystemStrings.exception, errorLog);
+    private static void startProxy(int port) {
+        Server server = Server.getNewServer();
+        server.getInstance(port, 5);
+        server.accept();
     }
 }

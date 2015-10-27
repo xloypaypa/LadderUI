@@ -1,79 +1,197 @@
 package net;
 
-import server.serverSolver.RequestSolver;
-import server.serverSolver.normalServer.AbstractServerSolver;
-import server.serverSolver.normalServer.NormalServerSolver;
-import tool.connection.event.ConnectionEvent;
-import tool.connection.event.ConnectionEventManager;
+import model.config.ConfigResourceManager;
+import net.server.normal.NormalServer;
+import net.tool.connectionSolver.ConnectionMessageImpl;
+import net.tool.connectionSolver.ConnectionStatus;
+import net.tool.packageSolver.PackageStatus;
+import net.tool.packageSolver.headSolver.HttpRequestHeadSolver;
+import net.tool.packageSolver.packageWriter.PackageWriter;
+import net.tool.packageSolver.packageWriter.packageWriterFactory.HttpReplyPackageWriterFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.channels.FileChannel;
 
 /**
- * Created by xlo on 15-7-14.
- * it's solver check post or get
+ * Created by suxin on 2015/10/27.
+ * it's the method server
  */
-public class MethodSolver extends AbstractServerSolver {
-    protected NormalServerSolver aimSolver;
-    protected RequestSolver requestSolver;
+public class MethodSolver extends NormalServer {
+    protected File file;
+    protected PackageWriter packageWriter;
+    protected FileChannel fileChannel;
+    protected long start, count;
+    protected volatile int status;
 
     public MethodSolver() {
-        ConnectionEventManager.getConnectionEventManager().addEventHandlerToItem(ConnectionEvent.connectEnd, this,
-                (event, solver) -> {
-                    solver.closeSocket();
-                    MethodSolver.this.aimSolver.closeSocket();
-                });
+        super(new ConnectionMessageImpl());
+        this.status = 1;
     }
 
     @Override
-    public boolean sendReply() {
-        if (this.requestSolver.getRequestHeadReader().getCommand().equals("POST")) {
-            this.aimSolver = new PostSolver();
-        } else if (this.requestSolver.getRequestHeadReader().getMessage("Get-folder-list") != null
-                && this.requestSolver.getRequestHeadReader().getMessage("Get-folder-list").equals("true")) {
-            this.aimSolver = new ListFolderSolver() {
-                public ListFolderSolver setRequestSolver(RequestSolver requestSolver) {
-                    this.requestSolver = requestSolver;
-                    return this;
-                }
-            }.setRequestSolver(this.requestSolver);
+    public ConnectionStatus whenWriting() {
+        if (this.status == 1) {
+            return solveHead();
+        } else if (this.status == 2) {
+            return buildReply();
+        } else if (this.status == 3) {
+            return sendHead();
+        } else if (this.status == 4) {
+            return sendFile();
         } else {
-            this.aimSolver = new ShowFolderStoppableAllDownloadServer() {
-                public ShowFolderStoppableAllDownloadServer setRequestSolver(RequestSolver requestSolver) {
-                    this.requestSolver = requestSolver;
-                    return this;
+            return ConnectionStatus.ERROR;
+        }
+    }
+
+    @Override
+    public ConnectionStatus whenClose() {
+        if (this.fileChannel != null && this.fileChannel.isOpen()) {
+            try {
+                this.fileChannel.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return super.whenClose();
+    }
+
+    @Override
+    public ConnectionStatus whenError() {
+        return super.whenError();
+    }
+
+    protected ConnectionStatus solveHead() {
+        try {
+            HttpRequestHeadSolver httpRequestHeadSolver = (HttpRequestHeadSolver) this.packageReader.getHeadPart();
+            this.file = new File(URLDecoder.decode(httpRequestHeadSolver.getUrl().getPath(), "UTF-8"));
+            this.status = 2;
+            return ConnectionStatus.WRITING;
+        } catch (UnsupportedEncodingException e) {
+            return ConnectionStatus.ERROR;
+        }
+    }
+
+    protected ConnectionStatus buildReply() {
+        if (!this.file.exists()) {
+            byte[] page = ConfigResourceManager.getConfigResourceManager().getResource("/404.html");
+            this.packageWriter = HttpReplyPackageWriterFactory
+                    .getHttpReplyPackageWriterFactory(this.getConnectionMessage().getSocket())
+                    .setReply(404)
+                    .setMessage("not found")
+                    .addMessage("Content-Length", page.length + "")
+                    .setBody(page)
+                    .getHttpPackageWriter();
+            this.status = 3;
+            return ConnectionStatus.WRITING;
+        } else if (this.file.isDirectory()) {
+            byte[] page;
+            try {
+                page = getPage();
+            } catch (UnsupportedEncodingException e) {
+                return ConnectionStatus.ERROR;
+            }
+            this.packageWriter = HttpReplyPackageWriterFactory
+                    .getHttpReplyPackageWriterFactory(this.getConnectionMessage().getSocket())
+                    .setReply(200)
+                    .setMessage("ok")
+                    .addMessage("Content-Length", page.length + "")
+                    .setBody(page)
+                    .getHttpPackageWriter();
+            this.status = 3;
+            return ConnectionStatus.WRITING;
+        } else {
+            this.packageWriter = HttpReplyPackageWriterFactory
+                    .getHttpReplyPackageWriterFactory(this.getConnectionMessage().getSocket())
+                    .setReply(200)
+                    .setMessage("ok")
+                    .addMessage("Content-Length", this.file.length() + "")
+                    .addMessage("Content-Type", "application/octet-stream")
+                    .addMessage("Content-Disposition", "attachment;filename=" + this.file.getName())
+                    .getHttpPackageWriter();
+            this.status = 3;
+            return ConnectionStatus.WRITING;
+        }
+    }
+
+    private byte[] getPage() throws UnsupportedEncodingException {
+        String page = "<!DOCTYPE html>\r\n" +
+                "<html>\r\n" +
+                "<head>\r\n";
+        page += "    <meta charset=\"" + System.getProperty("file.encoding") + "\">\r\n";
+        page += "    <title>page</title>\r\n" +
+                "</head>\r\n" +
+                "<body>\r\n" +
+                "<div id = \"folder\">\r\n";
+        File[] files = this.file.listFiles();
+
+        try {
+            page += "<a href=\"/" + URLEncoder.encode(this.file.getParentFile().getAbsolutePath(), "UTF-8") + "\"> parent folder </a> <br><br>";
+        } catch (NullPointerException ignored) {
+            page += "<br><br><br>\r\n";
+        }
+
+
+        if (files != null) {
+            for (File now : files) {
+                String name = now.getName();
+                if (now.isFile()) name += " (file)";
+                else name += " (folder)";
+                String nowPage = "<a href=\"/" + URLEncoder.encode(now.getAbsolutePath(), "UTF-8") + "\"> " + name + " </a> <br>\r\n";
+                page += nowPage;
+            }
+        }
+        page += "</div>\r\n" +
+                "</body>\r\n" +
+                "</html>";
+        return page.getBytes();
+    }
+
+    protected ConnectionStatus sendHead() {
+        try {
+            PackageStatus packageStatus = PackageWriter.writePackage(this.packageWriter);
+            if (packageStatus.equals(PackageStatus.WAITING)) {
+                return ConnectionStatus.WAITING;
+            } else if (packageStatus.equals(PackageStatus.END)) {
+                if (this.file.exists() && this.file.isFile()) {
+                    this.status = 4;
+                    this.start = 0;
+                    this.count = this.file.length();
+                    RandomAccessFile randomAccessFile = new RandomAccessFile(this.file, "rw");
+                    this.fileChannel = randomAccessFile.getChannel();
+                    return ConnectionStatus.WRITING;
+                } else {
+                    this.status = 1;
+                    this.toReading();
+                    return ConnectionStatus.WAITING;
                 }
-            }.setRequestSolver(this.requestSolver);
+            } else {
+                return ConnectionStatus.ERROR;
+            }
+        } catch (IOException e) {
+            return ConnectionStatus.ERROR;
         }
-        return this.aimSolver.sendReply();
     }
 
-    @Override
-    public void connect() {
-        this.aimSolver.connect();
-    }
-
-    @Override
-    public boolean checkIP() {
-        return true;
-    }
-
-    @Override
-    public boolean buildIO() {
-        this.requestSolver = this.requestSolverBuilder.getNewRequestSolver();
-        this.requestSolver.getSocketIoBuilder().setSocket(this.socket);
-        if (this.requestSolver.getSocketIoBuilder().buildIO()) {
-            this.requestSolver.getRequestHeadReader().setInputStream(this.requestSolver.getSocketIoBuilder().getInputStream());
-            this.requestSolver.getReplyHeadWriter().setOutputStream(this.requestSolver.getSocketIoBuilder().getOutputStream());
-            return true;
+    protected ConnectionStatus sendFile() {
+        try {
+            long len = this.fileChannel.transferTo(this.start, this.count, this.getConnectionMessage().getSocket());
+            this.start += len;
+            this.count -= len;
+            if (this.count == 0L) {
+                this.fileChannel.close();
+                this.toReading();
+                this.status = 1;
+                return ConnectionStatus.WAITING;
+            } else {
+                return len == 0L ? ConnectionStatus.WAITING : ConnectionStatus.WRITING;
+            }
+        } catch (IOException e) {
+            return ConnectionStatus.ERROR;
         }
-        return false;
-    }
-
-    @Override
-    public boolean readRequest() {
-        return this.requestSolver.getRequestHeadReader().readHead();
-    }
-
-    @Override
-    public boolean checkAccept() {
-        return true;
     }
 }
