@@ -171,19 +171,19 @@ public class Main {
     }
 
     private static void startServer(int port, int selectorNum) {
-        Server server = Server.getNewServer(MethodSolver::new);
+        Server server = Server.getNewServer("file", MethodSolver::new);
         server.getInstance(port, selectorNum);
         server.accept();
     }
 
     private static void startTransfer(int port, String serverHost, int serverPort, int selectorNum) {
-        Server server = Server.getNewServer(() -> new TransferProxyReadServer(new ConnectionMessageImpl(), serverHost, serverPort));
+        Server server = Server.getNewServer("transfer", () -> new TransferProxyReadServer(new ConnectionMessageImpl(), serverHost, serverPort));
         server.getInstance(port, selectorNum);
         server.accept();
     }
 
     private static void startProxy(int port, int selectorNum) {
-        Server server = Server.getNewServer();
+        Server server = Server.getNewServer("proxy");
         server.getInstance(port, selectorNum);
         server.accept();
     }
