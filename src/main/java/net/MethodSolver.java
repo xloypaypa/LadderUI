@@ -105,17 +105,41 @@ public class MethodSolver extends NormalServer {
             this.status = 3;
             return ConnectionStatus.WRITING;
         } else {
-            this.packageWriter = HttpReplyPackageWriterFactory
-                    .getHttpReplyPackageWriterFactory(this.getConnectionMessage().getSocket())
-                    .setReply(200)
-                    .setMessage("ok")
-                    .addMessage("Content-Length", this.file.length() + "")
-                    .addMessage("Content-Type", "application/octet-stream")
-                    .addMessage("Content-Disposition", "attachment;filename=" + this.file.getName())
-                    .getHttpPackageWriter();
+            String range = ((HttpRequestHeadSolver) this.packageReader.getHeadPart()).getMessage("Range");
+            System.out.println(range);
+            if (range == null) {
+                this.start = 0;
+                this.count = this.file.length();
+                this.packageWriter = HttpReplyPackageWriterFactory.getHttpReplyPackageWriterFactory(this.getConnectionMessage().getSocket())
+                        .addMessage("Content-Type", "application/octet-stream")
+                        .addMessage("Content-Length", this.file.length() + "")
+                        .addMessage("Content-Disposition", "attachment;filename=" + this.file.getName())
+                        .getHttpPackageWriter();
+            } else {
+                solveRange(range);
+            }
             this.status = 3;
             return ConnectionStatus.WRITING;
         }
+    }
+
+    protected void solveRange(String range) {
+        System.out.println("range: " + range);
+        int start = range.indexOf("=");
+        int half = range.indexOf("-");
+        this.start = Long.valueOf(range.substring(start + 1, half));
+        try {
+            this.count = Long.valueOf(range.substring(half + 1)) - start + 1;
+        } catch (Exception e) {
+            this.count = this.file.length() - this.start;
+        }
+        this.packageWriter = HttpReplyPackageWriterFactory.getHttpReplyPackageWriterFactory(this.getConnectionMessage().getSocket())
+                .setReply(206)
+                .addMessage("Content-Type", "application/octet-stream")
+                .addMessage("Content-Length", this.count + "")
+                .addMessage("Content-Disposition", "attachment;filename=" + this.file.getName())
+                .addMessage("Content-Range", "bytes " + this.start + "-" + (this.start + this.count - 1) + "/" + this.file.length())
+                .getHttpPackageWriter();
     }
 
     private byte[] getPage() throws UnsupportedEncodingException {
@@ -159,8 +183,6 @@ public class MethodSolver extends NormalServer {
             } else if (packageStatus.equals(PackageStatus.END)) {
                 if (this.file.exists() && this.file.isFile()) {
                     this.status = 4;
-                    this.start = 0;
-                    this.count = this.file.length();
                     RandomAccessFile randomAccessFile = new RandomAccessFile(this.file, "rw");
                     this.fileChannel = randomAccessFile.getChannel();
                     return ConnectionStatus.WRITING;
