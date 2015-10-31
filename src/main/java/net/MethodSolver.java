@@ -106,7 +106,6 @@ public class MethodSolver extends NormalServer {
             return ConnectionStatus.WRITING;
         } else {
             String range = ((HttpRequestHeadSolver) this.packageReader.getHeadPart()).getMessage("Range");
-            System.out.println(range);
             if (range == null) {
                 this.start = 0;
                 this.count = this.file.length();
