@@ -49,7 +49,7 @@ public class MethodSolver extends NormalServer {
     }
 
     @Override
-    public ConnectionStatus whenClose() {
+    public ConnectionStatus whenClosing() {
         if (this.fileChannel != null && this.fileChannel.isOpen()) {
             try {
                 this.fileChannel.close();
@@ -57,7 +57,7 @@ public class MethodSolver extends NormalServer {
                 e.printStackTrace();
             }
         }
-        return super.whenClose();
+        return super.whenClosing();
     }
 
     @Override
