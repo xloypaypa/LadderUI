@@ -80,12 +80,12 @@ public class MethodSolver extends NormalServer {
         if (!this.file.exists()) {
             byte[] page = ConfigResourceManager.getConfigResourceManager().getResource("/404.html");
             this.packageWriter = HttpReplyPackageWriterFactory
-                    .getHttpReplyPackageWriterFactory(this.getConnectionMessage().getSocket())
+                    .getHttpReplyPackageWriterFactory()
                     .setReply(404)
                     .setMessage("not found")
                     .addMessage("Content-Length", page.length + "")
                     .setBody(page)
-                    .getHttpPackageWriter();
+                    .getHttpPackageWriter(this.getConnectionMessage().getSocket());
             this.status = 3;
             return ConnectionStatus.WRITING;
         } else if (this.file.isDirectory()) {
@@ -96,12 +96,12 @@ public class MethodSolver extends NormalServer {
                 return ConnectionStatus.ERROR;
             }
             this.packageWriter = HttpReplyPackageWriterFactory
-                    .getHttpReplyPackageWriterFactory(this.getConnectionMessage().getSocket())
+                    .getHttpReplyPackageWriterFactory()
                     .setReply(200)
                     .setMessage("ok")
                     .addMessage("Content-Length", page.length + "")
                     .setBody(page)
-                    .getHttpPackageWriter();
+                    .getHttpPackageWriter(this.getConnectionMessage().getSocket());
             this.status = 3;
             return ConnectionStatus.WRITING;
         } else {
@@ -109,11 +109,11 @@ public class MethodSolver extends NormalServer {
             if (range == null) {
                 this.start = 0;
                 this.count = this.file.length();
-                this.packageWriter = HttpReplyPackageWriterFactory.getHttpReplyPackageWriterFactory(this.getConnectionMessage().getSocket())
+                this.packageWriter = HttpReplyPackageWriterFactory.getHttpReplyPackageWriterFactory()
                         .addMessage("Content-Type", "application/octet-stream")
                         .addMessage("Content-Length", this.file.length() + "")
                         .addMessage("Content-Disposition", "attachment;filename=" + this.file.getName())
-                        .getHttpPackageWriter();
+                        .getHttpPackageWriter(this.getConnectionMessage().getSocket());
             } else {
                 solveRange(range);
             }
@@ -132,13 +132,13 @@ public class MethodSolver extends NormalServer {
         } catch (Exception e) {
             this.count = this.file.length() - this.start;
         }
-        this.packageWriter = HttpReplyPackageWriterFactory.getHttpReplyPackageWriterFactory(this.getConnectionMessage().getSocket())
+        this.packageWriter = HttpReplyPackageWriterFactory.getHttpReplyPackageWriterFactory()
                 .setReply(206)
                 .addMessage("Content-Type", "application/octet-stream")
                 .addMessage("Content-Length", this.count + "")
                 .addMessage("Content-Disposition", "attachment;filename=" + this.file.getName())
                 .addMessage("Content-Range", "bytes " + this.start + "-" + (this.start + this.count - 1) + "/" + this.file.length())
-                .getHttpPackageWriter();
+                .getHttpPackageWriter(this.getConnectionMessage().getSocket());
     }
 
     private byte[] getPage() throws UnsupportedEncodingException {
