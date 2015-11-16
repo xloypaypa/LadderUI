@@ -6,8 +6,11 @@ import net.server.proxy.TransferProxyReadServer;
 import net.tool.connectionSolver.ConnectionMessageImpl;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Clock;
 
 /**
  * Created by xlo on 15-11-14.
@@ -34,6 +37,32 @@ public class MainPage {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.pack();
         frame.setLocationRelativeTo(null);
+        if (System.getProperties().getProperty("os.name").toUpperCase().contains("WINDOWS")) {
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowIconified(WindowEvent e) {
+                    frame.setVisible(false);
+                }
+            });
+            try {
+                SystemTray tray =  SystemTray.getSystemTray();
+                TrayIcon trayIcon = new TrayIcon(Toolkit.getDefaultToolkit()
+                        .getImage(Clock.class.getResource("/javax/swing/plaf/basic/icons/JavaCup16.png")));
+                trayIcon.setImageAutoSize(true);
+                trayIcon.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        if (e.getClickCount() >= 2) {
+                            frame.setVisible(true);
+                        }
+                    }
+                });
+                tray.add(trayIcon);
+            } catch (AWTException e1) {
+                e1.printStackTrace();
+            }
+        }
+
         frame.setVisible(true);
     }
 
