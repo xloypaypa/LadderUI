@@ -30,7 +30,6 @@ public class DownloadClientSolver extends AbstractServer {
     protected volatile PackageReader packageReader;
     protected volatile PackageWriter packageWriter;
 
-
     public DownloadClientSolver(String ip, int port, String path, String aimPath) {
         super(new ConnectionMessageImpl());
         this.aimStatus = this.getConnectionStatus();

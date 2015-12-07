@@ -43,7 +43,9 @@ public class DownloadFileClientSolver extends AbstractServer {
         now = 0;
         this.path = path;
         try {
-            this.file = new File(aimPath + URLDecoder.decode(path.substring(from.length()), "UTF-8"));
+            String newFilePath = aimPath + URLDecoder.decode(path.substring(from.length()), "UTF-8");
+            newFilePath = newFilePath.replace('\\', '/');
+            this.file = new File(newFilePath);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
