@@ -12,7 +12,6 @@ import net.tool.packageSolver.packageWriter.PackageWriter;
 import net.tool.packageSolver.packageWriter.packageWriterFactory.HttpRequestPackageWriterFactory;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
@@ -59,7 +58,7 @@ public class DownloadClientSolver extends AbstractServer {
                     this.packageWriter = HttpRequestPackageWriterFactory.getHttpReplyPackageWriterFactory()
                             .setCommand("POST")
                             .setHost("client")
-                            .setUrl(URLEncoder.encode(path, "UTF-8"))
+                            .setUrl(path)
                             .setVersion("HTTP/1.1").getHttpPackageWriter(this.getConnectionMessage().getSocket());
                     toWriting();
                     return ConnectionStatus.WAITING;

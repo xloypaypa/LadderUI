@@ -14,7 +14,8 @@ import net.tool.packageSolver.packageWriter.packageWriterFactory.HttpRequestPack
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.net.URLEncoder;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -41,7 +42,11 @@ public class DownloadFileClientSolver extends AbstractServer {
         this.fileLen = fileLen;
         now = 0;
         this.path = path;
-        this.file = new File(aimPath + path.substring(from.length()));
+        try {
+            this.file = new File(aimPath + URLDecoder.decode(path.substring(from.length()), "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -80,7 +85,7 @@ public class DownloadFileClientSolver extends AbstractServer {
                     this.packageWriter = HttpRequestPackageWriterFactory.getHttpReplyPackageWriterFactory()
                             .setCommand("GET")
                             .setHost("client")
-                            .setUrl(URLEncoder.encode(path, "UTF-8"))
+                            .setUrl(path)
                             .setVersion("HTTP/1.1").getHttpPackageWriter(this.getConnectionMessage().getSocket());
                     toWriting();
                     return ConnectionStatus.WAITING;
