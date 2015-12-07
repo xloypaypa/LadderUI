@@ -10,7 +10,9 @@ import net.tool.packageSolver.packageWriter.packageWriterFactory.HttpReplyPackag
 
 import java.io.File;
 import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
@@ -115,7 +117,7 @@ public class DownloadServerSolver extends NormalServer {
         }
     }
 
-    private long solveFolder(File file, List<String> path) {
+    private long solveFolder(File file, List<String> path) throws UnsupportedEncodingException {
         long len = 0;
         File[] files = file.listFiles();
         assert files != null;
@@ -124,7 +126,7 @@ public class DownloadServerSolver extends NormalServer {
                 len += solveFolder(now, path);
             } else {
                 path.add(now.length() + "\r\n");
-                path.add(now.getAbsolutePath() + "\r\n");
+                path.add(URLEncoder.encode(now.getAbsolutePath(), "UTF-8") + "\r\n");
                 len += now.length();
             }
         }
