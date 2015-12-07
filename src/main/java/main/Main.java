@@ -1,5 +1,6 @@
 package main;
 
+import net.DownloadServerSolver;
 import net.MethodSolver;
 import net.server.Server;
 import net.server.proxy.TransferProxyReadServer;
@@ -17,24 +18,27 @@ import java.net.UnknownHostException;
 public class Main {
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("LADDER");
-        frame.setSize(300, 600);
-        frame.setLayout(null);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-        JTabbedPane jTabbedPane = new JTabbedPane();
-        jTabbedPane.setBounds(0, 0, 300, 600);
-        frame.add(jTabbedPane);
-
-        try {
-            proxyPage(jTabbedPane);
-            transferProxyPage(jTabbedPane);
-            fileServerPage(jTabbedPane);
-        } catch (UnknownHostException e) {
-            JOptionPane.showMessageDialog(null, e.getMessage(), "error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        frame.setVisible(true);
+        Server server = Server.getNewServer("download", () -> new DownloadServerSolver(new ConnectionMessageImpl()));
+        server.getInstance(8080, 5);
+        server.accept();
+//        JFrame frame = new JFrame("LADDER");
+//        frame.setSize(300, 600);
+//        frame.setLayout(null);
+//        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+//
+//        JTabbedPane jTabbedPane = new JTabbedPane();
+//        jTabbedPane.setBounds(0, 0, 300, 600);
+//        frame.add(jTabbedPane);
+//
+//        try {
+//            proxyPage(jTabbedPane);
+//            transferProxyPage(jTabbedPane);
+//            fileServerPage(jTabbedPane);
+//        } catch (UnknownHostException e) {
+//            JOptionPane.showMessageDialog(null, e.getMessage(), "error", JOptionPane.ERROR_MESSAGE);
+//        }
+//
+//        frame.setVisible(true);
     }
 
     protected static void fileServerPage(JTabbedPane jTabbedPane) throws UnknownHostException {

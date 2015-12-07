@@ -18,7 +18,7 @@ import java.net.URLEncoder;
 import java.nio.channels.FileChannel;
 
 /**
- * Created by suxin on 2015/10/27.
+ * Created by xlo on 2015/10/27.
  * it's the method server
  */
 public class MethodSolver extends NormalServer {
