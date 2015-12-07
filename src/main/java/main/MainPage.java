@@ -121,10 +121,6 @@ public class MainPage {
         this.downloadServerNum.setText("5");
 
         this.downloadClientPort.setText("9999");
-        //
-        this.downloadClientIp.setText("127.0.0.1");
-        this.downloadAimPath.setText("D:/test");
-        this.downloadFilePath.setText("D:/aim");
 
         startProxyButton.addActionListener(e -> {
             try {
