@@ -1,6 +1,6 @@
 package main;
 
-import net.MethodSolver;
+import net.*;
 import net.server.Server;
 import net.server.proxy.TransferProxyReadServer;
 import net.tool.connectionSolver.ConnectionMessageImpl;
@@ -8,6 +8,7 @@ import net.tool.connectionSolver.ConnectionMessageImpl;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Clock;
@@ -17,6 +18,7 @@ import java.time.Clock;
  * it's the main page
  */
 public class MainPage {
+    private static MainPage mainPage;
     private JPanel panel;
     private JTextField serverIp;
     private JTextField proxyPort;
@@ -30,10 +32,40 @@ public class MainPage {
     private JTextField filePort;
     private JTextField fileThread;
     private JButton startFileServerButton;
+    private JTextField downloadServerPort;
+    private JTextField downloadServerNum;
+    private JButton startDownloadServerButton;
+    private JTextField downloadClientIp;
+    private JTextField downloadAimPath;
+    private JTextField downloadFilePath;
+    private JButton startDownloadButton;
+    private JProgressBar downloadStatus;
+    private JTextField downloadClientPort;
+
+    private long allSize, nowSize;
+
+    public static MainPage getMainPage() {
+        return mainPage;
+    }
 
     public static void main(String[] args) {
+
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Client client = Client.getClient();
+                    client.startSelector();
+                    client.run();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+
         JFrame frame = new JFrame("MainPage");
-        frame.setContentPane(new MainPage().panel);
+        mainPage = new MainPage();
+        frame.setContentPane(mainPage.panel);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.pack();
         frame.setLocationRelativeTo(null);
@@ -45,7 +77,7 @@ public class MainPage {
                 }
             });
             try {
-                SystemTray tray =  SystemTray.getSystemTray();
+                SystemTray tray = SystemTray.getSystemTray();
                 TrayIcon trayIcon = new TrayIcon(Toolkit.getDefaultToolkit()
                         .getImage(Clock.class.getResource("/javax/swing/plaf/basic/icons/JavaCup16.png")));
                 trayIcon.setImageAutoSize(true);
@@ -84,6 +116,16 @@ public class MainPage {
 
         this.filePort.setText("8888");
         this.fileThread.setText("5");
+
+        this.downloadServerPort.setText("9999");
+        this.downloadServerNum.setText("5");
+
+        this.downloadClientPort.setText("9999");
+        //
+        this.downloadClientIp.setText("127.0.0.1");
+        this.downloadAimPath.setText("D:/test");
+        this.downloadFilePath.setText("D:/aim");
+
         startProxyButton.addActionListener(e -> {
             try {
                 proxyPort.setEnabled(false);
@@ -116,14 +158,77 @@ public class MainPage {
                 showError(e1);
             }
         });
+        startDownloadServerButton.addActionListener(e -> {
+            try {
+                downloadServerPort.setEnabled(false);
+                downloadServerNum.setEnabled(false);
+                startDownloadServerButton.setEnabled(false);
+                startDownloadServer(getValue(downloadServerPort), getValue(downloadServerNum));
+            } catch (Exception e1) {
+                showError(e1);
+            }
+        });
+        startDownloadButton.addActionListener(e -> {
+            enableClient(false);
+            try {
+                startDownload(this.downloadClientIp.getText(), Integer.valueOf(this.downloadClientPort.getText()), this.downloadAimPath.getText(), this.downloadFilePath.getText());
+            } catch (Exception e1) {
+                showError(e1);
+            }
+        });
+    }
+
+    public void setAllSize(long allSize) {
+        this.allSize = allSize;
+    }
+
+    public void zeroNowSize() {
+        setNowSize(0);
+    }
+
+    public void addNowSize(long value) {
+        setNowSize(nowSize + value);
+    }
+
+    protected void setNowSize(long nowSize) {
+        this.nowSize = nowSize;
+        this.downloadStatus.setValue((int) (nowSize * 100 / allSize));
+        if (nowSize == allSize) {
+            enableClient(true);
+        }
     }
 
     private int getValue(JTextField jTextField) {
         return Integer.valueOf(jTextField.getText());
     }
 
-    private void showError(Exception e) {
+    private static void showError(Exception e) {
         JOptionPane.showMessageDialog(null, e.getMessage(), "error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void enableClient(boolean enabled) {
+        this.downloadClientPort.setEnabled(enabled);
+        this.downloadClientIp.setEnabled(enabled);
+        this.downloadAimPath.setEnabled(enabled);
+        this.downloadFilePath.setEnabled(enabled);
+        this.startDownloadButton.setEnabled(enabled);
+    }
+
+    private static void startDownload(String ip, int port, String aim, String path) {
+        Client client = Client.getClient();
+        try {
+            client.connect(ip, port, new DownloadClientSolver(ip, port, aim, path));
+        } catch (IOException e) {
+            showError(e);
+        }
+    }
+
+    private static void startDownloadServer(int port, int selectNum) {
+        new Thread(() -> {
+            Server server = Server.getNewServer("download", () -> new DownloadServerSolver(new ConnectionMessageImpl()));
+            server.getInstance(port, selectNum);
+            server.accept();
+        }).start();
     }
 
     private static void startFileServer(int port, int selectorNum) {

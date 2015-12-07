@@ -41,7 +41,7 @@ public class DownloadServerSolver extends NormalServer {
 
     private ConnectionStatus sendFile() {
         try {
-            String path = URLDecoder.decode(httpRequestHeadSolver.getUrl().getHost(), "UTF-8");
+            String path = URLDecoder.decode(httpRequestHeadSolver.getUrlString(), "UTF-8");
             if (fileChannel == null) {
                 File file = new File(path);
                 len = file.length();
@@ -64,7 +64,7 @@ public class DownloadServerSolver extends NormalServer {
 
     private ConnectionStatus sendFilesMessage() {
         try {
-            String path = URLDecoder.decode(httpRequestHeadSolver.getUrl().getHost(), "UTF-8");
+            String path = URLDecoder.decode(httpRequestHeadSolver.getUrlString(), "UTF-8");
             File file = new File(path);
             if (!file.exists()) {
                 PackageWriter packageWriter = HttpReplyPackageWriterFactory.getHttpReplyPackageWriterFactory()

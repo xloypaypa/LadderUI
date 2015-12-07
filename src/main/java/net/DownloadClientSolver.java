@@ -1,6 +1,6 @@
 package net;
 
-import main.Main2;
+import main.MainPage;
 import net.server.AbstractServer;
 import net.tool.connectionManager.ConnectionManager;
 import net.tool.connectionSolver.ConnectionMessageImpl;
@@ -22,8 +22,9 @@ import java.nio.channels.SocketChannel;
  */
 public class DownloadClientSolver extends AbstractServer {
 
-    protected String path;
+    protected String path, ip, aimPath;
     private String[] message;
+    private int port;
 
     protected ConnectionStatus aimStatus;
 
@@ -31,11 +32,15 @@ public class DownloadClientSolver extends AbstractServer {
     protected volatile PackageWriter packageWriter;
 
 
-    public DownloadClientSolver(String path, String aimPath) {
+    public DownloadClientSolver(String ip, int port, String path, String aimPath) {
         super(new ConnectionMessageImpl());
         this.aimStatus = this.getConnectionStatus();
         this.path = path;
         this.message = null;
+
+        this.ip = ip;
+        this.port = port;
+        this.aimPath = aimPath;
     }
 
     @Override
@@ -62,6 +67,7 @@ public class DownloadClientSolver extends AbstractServer {
                     return ConnectionStatus.WAITING;
                 }
             } catch (IOException e) {
+                e.printStackTrace();
                 return ConnectionStatus.ERROR;
             }
         } else {
@@ -75,11 +81,17 @@ public class DownloadClientSolver extends AbstractServer {
             PackageStatus packageStatus = packageReader.read();
             if (packageStatus.equals(PackageStatus.END)) {
                 this.message = new String(this.packageReader.getBody()).split("\r\n");
+                long allSize = 0;
                 for (int i = 0; i < message.length; i += 2) {
-                    Main2.download(Long.valueOf(message[i]), path, message[i + 1]);
+                    allSize += Long.valueOf(message[i]);
                 }
-                toWriting();
-                return ConnectionStatus.WAITING;
+                MainPage.getMainPage().setAllSize(allSize);
+                MainPage.getMainPage().zeroNowSize();
+                for (int i = 0; i < message.length; i += 2) {
+                    Client client = Client.getClient();
+                    client.connect(ip, port, new DownloadFileClientSolver(message[i + 1], path, aimPath, Long.valueOf(message[i])));
+                }
+                return ConnectionStatus.CLOSE;
             } else if (packageStatus.equals(PackageStatus.WAITING)) {
                 return ConnectionStatus.WAITING;
             } else if (packageStatus.equals(PackageStatus.ERROR)) {

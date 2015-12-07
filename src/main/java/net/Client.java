@@ -9,16 +9,20 @@ import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by xlo on 2015/11/3.
  * it's the client
  */
 public class Client extends Thread {
-    protected SocketChannel socketChannel;
-    protected Selector selector;
+    protected volatile Selector selector;
 
-    private static Client client;
+    private static volatile Client client;
+
+    private final List<SocketChannel> next = new LinkedList<>();
+    private final List<AbstractServer> abstractServers = new LinkedList<>();
 
     public static Client getClient() {
         if (client == null) {
@@ -36,14 +40,17 @@ public class Client extends Thread {
     }
 
     public void connect(String host, int port, AbstractServer downloadClientSolver) throws IOException {
-        this.socketChannel = SocketChannel.open();
-        this.socketChannel.configureBlocking(false);
-        this.socketChannel.connect(new InetSocketAddress(host, port));
+        SocketChannel socketChannel = SocketChannel.open();
+        socketChannel.configureBlocking(false);
+        socketChannel.connect(new InetSocketAddress(host, port));
 
-        downloadClientSolver.getConnectionMessage().setSocket(this.socketChannel);
+        downloadClientSolver.getConnectionMessage().setSocket(socketChannel);
 
-        ConnectionManager.getSolverManager().putSolver(this.socketChannel.socket(), downloadClientSolver);
-        downloadClientSolver.getConnectionMessage().setSelectionKey(this.socketChannel.register(this.selector, SelectionKey.OP_CONNECT));
+        ConnectionManager.getSolverManager().putSolver(socketChannel.socket(), downloadClientSolver);
+        synchronized (next) {
+            next.add(socketChannel);
+            abstractServers.add(downloadClientSolver);
+        }
         this.selector.wakeup();
     }
 
@@ -59,6 +66,15 @@ public class Client extends Thread {
                     connectionSolver.run();
                 }
                 this.selector.selectedKeys().clear();
+                synchronized (next) {
+                    for (int i=0;i<next.size();i++) {
+                        SocketChannel socketChannel = next.get(i);
+                        AbstractServer abstractServer = abstractServers.get(i);
+                        abstractServer.getConnectionMessage().setSelectionKey(socketChannel.register(this.selector, SelectionKey.OP_CONNECT));
+                    }
+                    next.clear();
+                    abstractServers.clear();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

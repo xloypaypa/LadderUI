@@ -1,5 +1,6 @@
 package net;
 
+import main.MainPage;
 import net.server.AbstractServer;
 import net.tool.connectionManager.ConnectionManager;
 import net.tool.connectionSolver.ConnectionMessageImpl;
@@ -98,6 +99,7 @@ public class DownloadFileClientSolver extends AbstractServer {
     public ConnectionStatus whenReading() {
         try {
             long once = fileChannel.transferFrom(this.getConnectionMessage().getSocket(), now, fileLen - now);
+            MainPage.getMainPage().addNowSize(once);
             now += once;
             if (now < fileLen) {
                 return ConnectionStatus.WAITING;
