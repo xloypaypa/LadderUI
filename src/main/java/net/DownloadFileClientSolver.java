@@ -51,6 +51,12 @@ public class DownloadFileClientSolver extends AbstractServer {
                     Thread.sleep(500);
                 }
             }
+            File parentFile = this.file.getParentFile();
+            if (!parentFile.exists()) {
+                while (!parentFile.mkdirs()) {
+                    Thread.sleep(500);
+                }
+            }
             while (!this.file.createNewFile()) {
                 Thread.sleep(500);
             }
@@ -93,7 +99,6 @@ public class DownloadFileClientSolver extends AbstractServer {
         try {
             long once = fileChannel.transferFrom(this.getConnectionMessage().getSocket(), now, fileLen - now);
             now += once;
-            System.out.println(file.getAbsolutePath() + " " + now + " / " + fileLen + " " + file.canWrite());
             if (now < fileLen) {
                 return ConnectionStatus.WAITING;
             } else {
@@ -139,7 +144,6 @@ public class DownloadFileClientSolver extends AbstractServer {
                 e.printStackTrace();
             }
         }
-        System.out.println("close " + file.getAbsolutePath());
         return null;
     }
 

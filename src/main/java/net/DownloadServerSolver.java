@@ -43,7 +43,6 @@ public class DownloadServerSolver extends NormalServer {
         try {
             String path = URLDecoder.decode(httpRequestHeadSolver.getUrl().getHost(), "UTF-8");
             if (fileChannel == null) {
-                System.out.println("get " + path);
                 File file = new File(path);
                 len = file.length();
                 now = 0;
