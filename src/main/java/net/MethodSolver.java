@@ -182,7 +182,7 @@ public class MethodSolver extends NormalServer {
             } else if (packageStatus.equals(PackageStatus.END)) {
                 if (this.file.exists() && this.file.isFile()) {
                     this.status = 4;
-                    RandomAccessFile randomAccessFile = new RandomAccessFile(this.file, "rw");
+                    RandomAccessFile randomAccessFile = new RandomAccessFile(this.file, "r");
                     this.fileChannel = randomAccessFile.getChannel();
                     return ConnectionStatus.WRITING;
                 } else {

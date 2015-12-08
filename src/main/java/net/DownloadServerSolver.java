@@ -48,7 +48,7 @@ public class DownloadServerSolver extends NormalServer {
                 File file = new File(path);
                 len = file.length();
                 now = 0;
-                RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+                RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
                 fileChannel = randomAccessFile.getChannel();
             }
 
